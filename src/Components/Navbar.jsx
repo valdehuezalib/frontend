@@ -2,7 +2,6 @@ import React from "react";
 import {
   FiCalendar,
   FiDollarSign,
-  FiBell,
   FiChevronDown,
 } from "react-icons/fi";
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 
 function Modal({ message, type = "success", onClose }) {
-  const headerColor = type === "success" ? "text-green-700" : "text-red-600";
+  //const headerColor = type === "success" ? "text-green-700" : "text-red-600";
   const buttonColor =
     type === "success"
       ? "bg-green-700 hover:bg-green-900"

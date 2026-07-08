@@ -1,7 +1,7 @@
 import React from "react";
 
 function EventsCard({ events }) {
-  const latestEvent = events[0];
+  //const latestEvent = events[0];
 
   return (
     <div className="bg-white rounded-3xl h-full shadow-sm px-8 py-5 flex items-center justify-between">
