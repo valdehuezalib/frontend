@@ -10,7 +10,7 @@ function Sidebar({ current, onNavigate, onLogout }) {
   return (
     <div className="h-full">
 
-      <div className="bg-white rounded-3xl h-full p-5 shadow-sm flex flex-col">
+      <div className="bg-white rounded-3xl min-h-full p-5 shadow-sm flex flex-col">
 
         {/* Department Card */}
         <div className={`${current?.color || "bg-green-900"} rounded-3xl p-5 text-white`}>
