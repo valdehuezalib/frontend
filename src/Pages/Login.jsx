@@ -1,0 +1,246 @@
+import React, { useState } from "react";
+
+
+function Modal({ message, type = "success", onClose }) {
+  const headerColor = type === "success" ? "text-green-700" : "text-red-600";
+  const buttonColor =
+    type === "success"
+      ? "bg-green-700 hover:bg-green-900"
+      : "bg-red-700 hover:bg-red-900";
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full text-center">
+        {/* <h2 className={`text-2xl font-semibold mb-4 ${headerColor}`}>
+          ALLFunds
+        </h2> */}
+        <p className="text-gray-700 mb-6">{message}</p>
+        <button
+          onClick={onClose}
+          className={`w-full h-12 rounded-lg text-white font-semibold transition ${buttonColor}`}
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Login({ mode = "login", onLogin, onRegister, onSwitch }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [department, setDepartment] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalType, setModalType] = useState("success");
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    try {
+      if (mode === "login") {
+        const response = await fetch(
+          `https://localhost:7223/api/treasurers/login?username=${username}&password=${password}`,
+          { method: "POST" }
+        );
+
+        if (!response.ok) {
+          setModalMessage("Login failed: Invalid username or password.");
+          setModalType("error");
+          return;
+        }
+
+        const data = await response.json();
+        console.log("Login response:", data); //
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+
+        const dept =
+            data.department ||
+            "College of Computer Studies";
+
+          setModalMessage("Login successful!");
+          setModalType("success");
+
+          onLogin(dept);
+        }
+      } else {
+        const response = await fetch(
+          "https://localhost:7223/api/treasurers/register",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username,
+              passwordHash: password,
+              department,
+            }),
+          }
+        );
+
+        if (response.ok) {
+          setModalMessage("Account registered successfully!");
+          setModalType("success");
+          onRegister();
+        } else {
+          const errorText = await response.text();
+          setModalMessage(
+            `Registration failed: ${errorText || "Please check your input."}`
+          );
+          setModalType("error");
+        }
+      }
+    } catch (err) {
+      setModalMessage(`Error: ${err.message}`);
+      setModalType("error");
+    }
+  }
+
+  return (
+    <div
+      className="min-h-screen flex items-center justify-center px-6"
+      style={{
+        background:
+          "linear-gradient(135deg, #f9faf9 0%, #eef4ef 45%, #e3efe7 100%)",
+      }}
+    >
+      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-xl p-10">
+        {/* Centered Seal Background */}
+        <img
+          src="/seal.png"
+          alt="Seal"
+          className="absolute inset-0 m-auto w-[420px] opacity-10 pointer-events-none select-none"
+        />
+
+        {/* Logo */}
+        <div className="flex items-center gap-5 mb-10 relative z-10">
+          <img
+            src="/allfundslogo.png"
+            alt="Allfunds"
+            className="w-20 h-20 object-contain"
+          />
+          <div>
+            <h1 className="text-6xl font-bold text-[#064e3b] leading-none">
+              ALLFunds
+            </h1>
+            <p className="text-[10px] tracking-[4px] uppercase text-gray-600 mt-1">
+              DMC COLLEGE FOUNDATION INC.
+            </p>
+          </div>
+        </div>
+
+        {/* Heading */}
+        <h2 className="text-5xl font-light text-gray-900 relative z-10">
+          {mode === "login" ? "Login" : "Register"}
+        </h2>
+        <p className="text-gray-500 mt-2 mb-10 relative z-10">
+          {mode === "login"
+            ? "Welcome to ALLFunds - Let's open your account"
+            : "Create your ALLFunds account"}
+        </p>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
+          {mode === "register" && (
+            <div>
+              <label className="block mb-2 font-medium text-gray-700">
+                Department
+              </label>
+              <select
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                className="w-full h-14 rounded-xl border border-gray-300 px-4 focus:ring-2 focus:ring-green-600 focus:outline-none"
+              >
+                <option value="">Select Department</option>
+                <option>College of Computer Studies</option>
+                <option>Bachelor of Science in Nursing</option>
+                <option>Bachelor of Science in Midwifery</option>
+                <option>Bachelor of Science in Radiologic Technology</option>
+                <option>Bachelor of Science in Medical Technology</option>
+                <option>Doctor of Medicine</option>
+                <option>Bachelor of Science in Pharmacy</option>
+                <option>Bachelor of Secondary Education & Elementary Education</option>
+                <option>Bachelor of Science in Hospitality Management</option>
+                <option>Bachelor of Science in Physical Therapy</option>
+                <option> Bachelor of Science in Accountancy &  Business Administration</option>
+              </select>
+            </div>
+          )}
+
+          {/* Username */}
+          <div>
+            <label className="block mb-2 font-medium text-gray-700">
+              Username
+            </label>
+            <input
+              type="text"
+              placeholder="Enter username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              className="w-full h-12 rounded-lg border border-gray-300 px-4 focus:ring-2 focus:ring-green-600 focus:outline-none"
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block mb-2 font-medium text-gray-700">
+              Password
+            </label>
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full h-12 rounded-lg border border-gray-300 px-4 focus:ring-2 focus:ring-green-600 focus:outline-none"
+            />
+          </div>
+
+          {/* Show Password + Switch */}
+          <div className="flex items-center justify-between">
+            {mode === "login" && (
+              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showPassword}
+                  onChange={() => setShowPassword(!showPassword)}
+                />
+                Show Password
+              </label>
+            )}
+            <button
+              type="button"
+              onClick={onSwitch}
+              className="text-green-700 hover:underline text-sm font-medium"
+            >
+              {mode === "login" ? "Register Account" : "Back to Login"}
+            </button>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full h-14 rounded-xl text-white text-xl font-semibold shadow-lg hover:opacity-95 transition"
+            style={{
+              background: "linear-gradient(90deg,#064e3b,#0a5b39,#17784c)",
+            }}
+          >
+            {mode === "login" ? "Login" : "Register"}
+          </button>
+        </form>
+      </div>
+
+      {/* Modal */}
+      {modalMessage && (
+        <Modal
+          message={modalMessage}
+          type={modalType}
+          onClose={() => setModalMessage("")}
+        />
+      )}
+    </div>
+  );
+}
+
+export default Login;
