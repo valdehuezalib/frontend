@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+const API_URL = process.env.REACT_APP_API_BASE_URL;
 
 function Modal({ message, type = "success", onClose }) {
   //const headerColor = type === "success" ? "text-green-700" : "text-red-600";
@@ -47,11 +48,10 @@ function Login({ mode = "login", onLogin, onRegister, onSwitch }) {
 
     try {
       if (mode === "login") {
-        const response = await fetch(
-          `https://localhost:7223/api/treasurers/login?username=${username}&password=${password}`,
+       const response = await fetch(
+          `${API_URL}/treasurers/login?username=${username}&password=${password}`,
           { method: "POST" }
         );
-
         if (!response.ok) {
           setModalMessage("Login failed: Invalid username or password.");
           setModalType("error");
@@ -74,7 +74,7 @@ function Login({ mode = "login", onLogin, onRegister, onSwitch }) {
         }
       } else {
         const response = await fetch(
-          "https://localhost:7223/api/treasurers/register",
+          `${API_URL}/treasurers/register`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

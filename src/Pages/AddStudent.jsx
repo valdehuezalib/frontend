@@ -8,6 +8,8 @@ import SearchBar from "../Components/SearchBar";
 import StudentTable from "../Components/StudentTable";
 import AddStudentModal from "../Components/AddStudentModal";
 
+const API_URL = process.env.REACT_APP_API_BASE_URL;
+
 function AddStudent({
   onNavigate,
   onLogout,
@@ -99,7 +101,7 @@ function AddStudent({
 
   async function loadStudents() {
     try {
-      const res = await fetch("https://localhost:7223/api/students", {
+      const res = await fetch(`${API_URL}/students`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -134,7 +136,7 @@ function AddStudent({
   async function handleDelete(studentID) {
     try {
       const res = await fetch(
-        `https://localhost:7223/api/students/${studentID}`,
+        `${API_URL}/students/${studentID}`,
         {
           method: "DELETE",
           headers: {
@@ -157,7 +159,7 @@ function AddStudent({
     try {
       if (selectedStudent) {
         const res = await fetch(
-          `https://localhost:7223/api/students/${selectedStudent.studentID}`,
+          `${API_URL}/students/${selectedStudent.studentID}`,
           {
             method: "PUT",
             headers: {
@@ -179,7 +181,7 @@ function AddStudent({
         );
       } else {
         const res = await fetch(
-          "https://localhost:7223/api/students",
+          `${API_URL}/students`,
           {
             method: "POST",
             headers: {

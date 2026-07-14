@@ -8,6 +8,9 @@ import SearchBar from "../Components/SearchBar";
 import EventTable from "../Components/EventTable";
 import AddEventModal from "../Components/AddEventModal";
 
+const API_URL = process.env.REACT_APP_API_BASE_URL;
+
+
 function EventManagement({ onNavigate, onLogout, department, currentPage }) {
   const selectedDepartment = department || "College of Computer Studies";
 
@@ -78,7 +81,7 @@ function EventManagement({ onNavigate, onLogout, department, currentPage }) {
   useEffect(() => {
     async function loadEvents() {
       try {
-        const res = await fetch("https://localhost:7223/api/events", {
+        const res = await fetch(`${API_URL}/events`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         if (!res.ok) throw new Error(`Events API ${res.status}`);
@@ -109,7 +112,7 @@ function EventManagement({ onNavigate, onLogout, department, currentPage }) {
 
   const handleDelete = async (eventID) => {
     try {
-      const res = await fetch(`https://localhost:7223/api/events/${eventID}`, {
+      const res = await fetch(`${API_URL}/events/${eventID}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -124,7 +127,7 @@ function EventManagement({ onNavigate, onLogout, department, currentPage }) {
   const handleSave = async (data) => {
     try {
       if (selectedEvent) {
-        const res = await fetch(`https://localhost:7223/api/events/${selectedEvent.eventID}`, {
+        const res = await fetch(`${API_URL}/events/${selectedEvent.eventID}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -136,7 +139,7 @@ function EventManagement({ onNavigate, onLogout, department, currentPage }) {
         const updated = await res.json();
         setEvents(events.map((ev) => (ev.eventID === updated.eventID ? updated : ev)));
       } else {
-        const res = await fetch("https://localhost:7223/api/events", {
+        const res = await fetch(`${API_URL}/events`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

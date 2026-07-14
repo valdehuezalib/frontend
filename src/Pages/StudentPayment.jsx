@@ -9,6 +9,7 @@ import PaymentTable from "../Components/PaymentTable";
 import AddPaymentModal from "../Components/AddPaymentModal";
 import ReceiptModal from "../Components/ReceiptModal";
 
+const API_URL = process.env.REACT_APP_API_BASE_URL;
 
 function StudentPayment({
   onNavigate,
@@ -139,7 +140,7 @@ useEffect(() => {
 async function loadPayments() {
     try {
         const res = await fetch(
-            "https://localhost:7223/api/payments",
+            `${API_URL}/payments`,
             {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -157,7 +158,7 @@ async function loadPayments() {
 async function loadStudents() {
 
     const res = await fetch(
-        "https://localhost:7223/api/students",
+        `${API_URL}/students`,
         {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -175,7 +176,7 @@ async function loadStudents() {
 async function loadEvents() {
 
     const res = await fetch(
-        "https://localhost:7223/api/events",
+        `${API_URL}/events`,
         {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -216,7 +217,7 @@ async function handleDelete(paymentID) {
     try {
 
         const res = await fetch(
-            `https://localhost:7223/api/payments/${paymentID}`,
+            `${API_URL}/payments/${paymentID}`,
             {
                 method: "DELETE",
                 headers: {
@@ -246,7 +247,7 @@ async function handleSave(payment) {
         if (selectedPayment) {
 
             const res = await fetch(
-                `https://localhost:7223/api/payments/${selectedPayment.paymentID}`,
+                `${API_URL}/payments/${selectedPayment.paymentID}`,
                 {
                     method: "PUT",
                     headers: {
@@ -270,7 +271,7 @@ async function handleSave(payment) {
         } else {
 
             const res = await fetch(
-                "https://localhost:7223/api/payments",
+                `${API_URL}/payments`,
                 {
                     method: "POST",
                     headers: {
