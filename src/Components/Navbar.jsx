@@ -1,48 +1,31 @@
-import React from "react";
-import {
-  FiCalendar,
-  FiDollarSign,
-  FiChevronDown,
-} from "react-icons/fi";
+import { FiChevronDown } from "react-icons/fi";
 
-function Navbar({ current, onNavigate }) {
+function Navbar({ current, onNavigate, currentPage, toggleSidebar }) {
   return (
-    <div className="bg-white rounded-full h-20 shadow-sm px-8 mb-2 flex items-center justify-between">
+    <div className="bg-white rounded-2xl h-20 shadow-sm px-4 sm:px-6 lg:px-8 mb-4 flex items-center justify-between">
 
       {/* Logo */}
-      <div className="flex items-center">
+      <div className="flex items-center gap-3">
         <img
           src="/allfundslogo.png"
           alt="AllFunds"
-          className="h-12 object-contain"
+          className="h-12 w-12 object-contain"
         />
+
+        <div>
+          <h1 className="text-2xl sm:text-4xl font-bold text-green-900 leading-none">
+            ALLFunds
+          </h1>
+
+          <p className="text-xs uppercase tracking-wider text-gray-500">
+            DMC COLLEGE FOUNDATION INC.
+          </p>
+        </div>
       </div>
 
-      {/* Navigation Buttons */}
-      <div className="flex items-center gap-3">
-
-        <button
-         onClick={() => onNavigate("eventmanagement")}
-         className="flex items-center gap-3 px-6 py-3 rounded-full bg-green-900 text-white font-medium hover:bg-green-800 transition">
-          <FiCalendar size={18} />
-          Event Management
-        </button>
-
-        <button className="flex items-center gap-3 px-6 py-3 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition">
-          <FiDollarSign size={18} />
-          Student Payment
-        </button>
-
-      </div>
-
+      
       {/* User Section */}
-      <div className="flex items-center gap-4">
-
-        {/* <button className="relative">
-          <FiBell size={22} />
-
-          <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button> */}
+      <div className="hidden md:flex items-center gap-4">
 
         <button className="flex items-center gap-3">
 

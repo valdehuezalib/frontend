@@ -1,12 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
+import LogoutModal from "./LogoutModal";
+
 import {
   FiHome,
   FiGrid,
   FiLogOut,
   FiUserPlus,
+  FiCalendar,
+  FiDollarSign,
 } from "react-icons/fi";
 
-function Sidebar({ current, onNavigate, onLogout }) {
+function Sidebar({ current, onNavigate, onLogout, currentPage }) {
+
+const [openLogout, setOpenLogout] = useState(false);
+
   return (
     <div className="h-full">
 
@@ -29,41 +36,80 @@ function Sidebar({ current, onNavigate, onLogout }) {
         <div className="mt-8 space-y-3">
 
           {/* Active */}
-          <button 
-           onClick={() => onNavigate("home")}
-          className="w-full flex items-center gap-3 rounded-xl px-5 py-4 bg-green-900 text-white font-medium">
-
+          <button
+              onClick={() => onNavigate("home")}
+              className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition
+                ${
+                  currentPage === "home"
+                    ? "bg-green-900 text-white"
+                    : "hover:bg-gray-100 text-gray-700"
+                }`}
+            >
             <FiHome size={20} />
 
             Home
 
           </button>
 
-          <button className="w-full flex items-center gap-3 rounded-xl px-5 py-4 hover:bg-gray-100 transition">
-
+          <button
+              onClick={() => onNavigate("addstudent")}
+              className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition
+                ${
+                  currentPage === "addstudent"
+                    ? "bg-green-900 text-white"
+                    : "hover:bg-gray-100 text-gray-700"
+                }`}
+            >
             <FiUserPlus size={20} />
-
             Add Student
-
           </button>
 
-        
-
-          <button className="w-full flex items-center gap-3 rounded-xl px-5 py-4 hover:bg-gray-100 transition">
-
-            <FiGrid size={20} />
-
-            Dashboard
-
+          <button
+            onClick={() => onNavigate("eventmanagement")}
+            className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition
+              ${
+                currentPage === "eventmanagement"
+                  ? "bg-green-900 text-white"
+                  : "hover:bg-gray-100 text-gray-700"
+              }`}
+          >
+            <FiCalendar size={20} />
+            Event Management
           </button>
+
+          <button
+            onClick={() => onNavigate("studentpayment")}
+            className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition
+              ${
+                currentPage === "studentpayment"
+                  ? "bg-green-900 text-white"
+                  : "hover:bg-gray-100 text-gray-700"
+              }`}
+          >
+            <FiDollarSign size={20} />
+            Student Payment
+          </button>
+
+          <button
+              onClick={() => onNavigate("dashboard")}
+              className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition
+                ${
+                  currentPage === "dashboard"
+                    ? "bg-green-900 text-white"
+                    : "hover:bg-gray-100 text-gray-700"
+                }`}
+            >
+              <FiGrid size={20} />
+              Dashboard
+            </button>
 
         </div>
 
         {/* Logout */}
         <div className="mt-auto">
 
-          <button 
-          onClick={onLogout}
+          <button
+          onClick={() => setOpenLogout(true)}
           className="w-full flex items-center gap-3 rounded-xl px-5 py-4 text-red-600 hover:bg-red-50 transition">
 
             <FiLogOut size={20} />
@@ -76,7 +122,18 @@ function Sidebar({ current, onNavigate, onLogout }) {
 
       </div>
 
+      <LogoutModal
+        open={openLogout}
+        onClose={() => setOpenLogout(false)}
+        onConfirm={() => {
+          setOpenLogout(false);
+          onLogout();
+        }}
+      />
+
     </div>
+
+
   );
 }
 

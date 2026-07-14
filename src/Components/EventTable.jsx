@@ -3,31 +3,31 @@ import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
 function EventTable({ events, onEdit, onDelete }) {
   return (
-    <div className="overflow-auto">
+    <div className="w-full overflow-x-auto rounded-xl">
 
-      <table className="w-full">
+      <table className="min-w-[700px] w-full">
 
         {/* Header */}
         <thead>
           <tr className="text-left text-gray-500 border-b">
 
-            <th className="py-4 font-semibold">
+            <th className="py-3 px-2 font-semibold text-sm whitespace-nowrap">
               Event Name
             </th>
 
-            <th className="py-4 font-semibold">
+            <th className="py-3 px-2 font-semibold text-sm whitespace-nowrap">
               Event Date
             </th>
 
-            <th className="py-4 font-semibold">
+            <th className="py-3 px-2 font-semibold text-sm whitespace-nowrap">
               Event Fee
             </th>
 
-            <th className="py-4 font-semibold">
+            <th className="py-3 px-2 font-semibold text-sm whitespace-nowrap">
               Payment Due
             </th>
 
-            <th className="py-4 text-center font-semibold">
+            <th className="py-3 px-2 font-semibold text-sm whitespace-nowrap">
               Actions
             </th>
 
@@ -59,20 +59,28 @@ function EventTable({ events, onEdit, onDelete }) {
                 className="border-b last:border-none hover:bg-gray-50 transition"
               >
 
-                <td className="py-5 font-medium">
+                <td className="py-4 px-2 whitespace-nowrap font-medium">
                   {event.eventName}
                 </td>
 
-                <td>
-                  {new Date(event.eventDate).toLocaleDateString()}
+                <td className="py-4 px-2 whitespace-nowrap">
+                  {new Date(event.eventDate).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </td>
 
-                <td>
+                <td className="py-4 px-2 whitespace-nowrap">
                   ₱ {event.eventFee}
                 </td>
 
-                <td>
-                  {new Date(event.paymentDue).toLocaleDateString()}
+                <td className="py-4 px-2 whitespace-nowrap">
+                 {new Date(event.paymentDue).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </td>
 
                 <td>
@@ -80,7 +88,7 @@ function EventTable({ events, onEdit, onDelete }) {
                   <div className="flex justify-center gap-4">
 
                     <button
-                      onClick={() => onEdit(event.id)}
+                      onClick={() => onEdit(event)}
                       className="text-blue-600 hover:text-blue-800"
                     >
                       <FiEdit2 size={18} />

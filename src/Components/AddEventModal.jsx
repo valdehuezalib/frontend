@@ -16,8 +16,12 @@ function AddEventModal({ open, onClose, selectedEvent, onSave }) {
     if (selectedEvent) {
       setFormData({
         eventName: selectedEvent.eventName || "",
-        eventDate: selectedEvent.eventDate || "",
-        paymentDue: selectedEvent.paymentDue || "",
+        eventDate: selectedEvent.eventDate
+          ? selectedEvent.eventDate.split("T")[0]
+          : "",
+        paymentDue: selectedEvent.paymentDue
+          ? selectedEvent.paymentDue.split("T")[0]
+          : "",
         eventFee: selectedEvent.eventFee || "",
       });
     } else {
@@ -71,11 +75,25 @@ function AddEventModal({ open, onClose, selectedEvent, onSave }) {
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl p-10">
+      <div
+        className="
+          bg-white
+          w-[95%]
+          sm:w-full
+          max-w-xl
+          rounded-3xl
+          shadow-2xl
+          p-5
+          sm:p-8
+          lg:p-10
+          max-h-[90vh]
+          overflow-y-auto
+        "
+      >
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex items-start justify-between gap-4 mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-green-900">
+            <h2 className="text-xl sm:text-2xl font-bold text-green-900">
               {selectedEvent ? "Edit Event" : "Add Event"}
             </h2>
             <p className="text-sm text-gray-500 mt-1">
@@ -91,9 +109,9 @@ function AddEventModal({ open, onClose, selectedEvent, onSave }) {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Event Name */}
-            <div className="col-span-2">
+            <div className="md:col-span-2">
               <label className="block mb-1.5 text-sm font-medium text-gray-700">
                 Event Name
               </label>
@@ -138,7 +156,7 @@ function AddEventModal({ open, onClose, selectedEvent, onSave }) {
             </div>
 
             {/* Event Fee */}
-            <div className="col-span-2">
+            <div className="md:col-span-2">
               <label className="block mb-1.5 text-sm font-medium text-gray-700">
                 Event Fee
               </label>
@@ -155,18 +173,18 @@ function AddEventModal({ open, onClose, selectedEvent, onSave }) {
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 mt-8">
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-8">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2.5 rounded-2xl bg-gray-200 hover:bg-gray-300 font-medium"
+              className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gray-200 hover:bg-gray-300 font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-2.5 rounded-2xl text-white hover:bg-green-800 font-semibold disabled:opacity-50"
+              className="w-full sm:w-auto px-6 py-3 rounded-2xl text-white hover:bg-green-800 font-semibold disabled:opacity-50"
               style={{
                 background: "linear-gradient(90deg,#062f20,#0b5d39,#17824e)",
               }}

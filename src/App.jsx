@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Login from "./Pages/Login";
 import Home from "./Pages/Home";
 import EventManagement from "./Pages/EventManagement";
+import AddStudent from "./Pages/AddStudent";
+import StudentPayment from "./Pages/StudentPayment";
 
 function App() {
   const [mode, setMode] = useState("login");          // login or register
@@ -18,7 +20,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen w-full overflow-x-hidden">
       {!isAuthenticated ? (
         <Login
           mode={mode}
@@ -33,17 +35,40 @@ function App() {
       ) : (
         <>
           {currentPage === "home" && (
-            <Home onNavigate={(page) => setCurrentPage(page)} 
-             onLogout={handleLogout}
-             department={department}
+            <Home
+                currentPage={currentPage}
+                onNavigate={(page) => setCurrentPage(page)}
+                onLogout={handleLogout}
+                department={department}
             />
           )}
           {currentPage === "eventmanagement" && (
-            <EventManagement onNavigate={(page) => setCurrentPage(page)} 
+            <EventManagement
+            onNavigate={(page) => setCurrentPage(page)} 
             onLogout={handleLogout}
             department={department}
+            currentPage={currentPage}
             />
           )}
+
+          {currentPage === "addstudent" && (
+            <AddStudent
+              currentPage={currentPage}
+              onNavigate={(page) => setCurrentPage(page)}
+              onLogout={handleLogout}
+              department={department}
+            />
+          )}
+
+          {currentPage === "studentpayment" && (
+            <StudentPayment
+              currentPage={currentPage}
+              onNavigate={(page) => setCurrentPage(page)}
+              onLogout={handleLogout}
+              department={department}
+            />
+          )}
+          
         </>
       )}
     </div>

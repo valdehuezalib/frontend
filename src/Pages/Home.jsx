@@ -7,7 +7,7 @@ import EventsCard from "../Components/EventsCard";
 import PaymentsCard from "../Components/PaymentsCard";
 import AddStudentCard from "../Components/AddStudentCard";
 
-function Home({ onNavigate, onLogout, department }) {
+function Home({ onNavigate, onLogout, department, currentPage }) {
   const selectedDepartment = department || "College of Computer Studies";
   console.log("Home department:", department);
 
@@ -37,6 +37,8 @@ const current =
   const [events, setEvents] = useState([]);
   const [dashboard, setDashboard] = useState(null);
   const [payments, setPayments] = useState([]);
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // 🔹 Fetch events
   useEffect(() => {
@@ -88,8 +90,14 @@ const current =
         const events = eventsRes.ok ? await eventsRes.json() : [];
         const payments = paymentsRes.ok ? await paymentsRes.json() : [];
 
+        const totalFunds = payments.reduce(
+          (sum, payment) => sum + Number(payment.amountPaid || 0),
+          0
+        );
+
+        
         setDashboard({
-          totalFunds: payments.reduce((sum, p) => sum + (p.amount || 0), 0), // sum of payments
+          totalFunds: totalFunds,
           totalStudents: Array.isArray(students) ? students.length : 0,
           totalEvents: Array.isArray(events) ? events.length : 0,
           totalPayments: Array.isArray(payments) ? payments.length : 0,
@@ -104,40 +112,51 @@ const current =
   }, []);
 
   return (
-    <div className="h-screen bg-gray-200 p-4 overflow-hidden">
-      <div className="max-w-screen-2xl mx-auto h-full flex flex-col">
-        <Navbar current={current} onNavigate={onNavigate} />
-        <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
-          <div className="col-span-2 h-full">
-            <Sidebar current={current} onNavigate={onNavigate} onLogout={onLogout} />
+    <div className="min-h-screen bg-gray-200 p-2 sm:p-4 overflow-x-hidden">
+      <div className="max-w-screen-2xl mx-auto min-h-screen flex flex-col">
+          <Navbar current={current} onNavigate={onNavigate} currentPage={currentPage}  toggleSidebar={() => setSidebarOpen(true)}/>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+
+          <div className="lg:col-span-2 order-3 lg:order-1">
+            <Sidebar current={current} onNavigate={onNavigate} onLogout={onLogout} currentPage={currentPage} sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen} />
           </div>
-          <div className="col-span-7 flex flex-col gap-4">
+
+          <div className="lg:col-span-7 order-1 lg:order-2 flex flex-col gap-4">
             <div>
-              <h1 className="text-3xl font-bold">
-                Home - <span className="text-green-700">{current.short}</span>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+                Home - <span className="text-green-900">{current.short}</span>
               </h1>
               <p className="text-gray-500 mt-1">Welcome back, Treasurer.</p>
             </div>
-            <div className="flex-[3] min-h-0">
+            <div>
               {dashboard ? (
-                <HeroCard current={current} dashboard={dashboard} />
+                <HeroCard
+                  current={current}
+                  dashboard={dashboard}
+                />
               ) : (
                 <div className="bg-white rounded-2xl p-10 shadow-sm">
                   <p className="text-gray-500">Loading dashboard...</p>
                 </div>
               )}
             </div>
-            <div className="flex-[2] min-h-0">
-              <EventsCard events={events} />
+            <div>
+              <EventsCard events={events} 
+              onNavigate={onNavigate}
+              />
             </div>
           </div>
-          <div className="col-span-3 flex flex-col gap-4 min-h-0">
-            <div className="flex-[3] min-h-0">
-              <PaymentsCard payments={payments} />
+           <div className="lg:col-span-3 order-2 lg:order-3 flex flex-col gap-4">
+            <div>
+              <PaymentsCard payments={payments} onNavigate={onNavigate} />
             </div>
-            <div className="h-56">
-              <AddStudentCard />
+
+            <div className="min-h-[220px]">
+              <AddStudentCard onNavigate={onNavigate} />
             </div>
+
           </div>
         </div>
       </div>

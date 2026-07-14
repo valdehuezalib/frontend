@@ -1,7 +1,7 @@
 import React from "react";
 import { FiUserPlus } from "react-icons/fi";
 
-function AddStudentCard() {
+function AddStudentCard({ onNavigate }) {
   return (
     <div className="bg-white rounded-3xl h-full shadow-sm px-6 py-5 flex flex-col items-center justify-center">
 
@@ -24,7 +24,10 @@ function AddStudentCard() {
       </p>
 
       {/* Button */}
-      <button className="mt-5 bg-green-900 hover:bg-green-800 transition text-white font-semibold text-sm rounded-full px-14 py-2">
+      <button
+        onClick={() => onNavigate("addstudent")}
+        className="mt-5 bg-green-900 hover:bg-green-800 transition text-white font-semibold text-sm rounded-full px-14 py-2"
+      >
         Add
       </button>
 
