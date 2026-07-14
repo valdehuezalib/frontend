@@ -17,7 +17,7 @@ function AddPaymentModal({
     studentID: "",
     eventID: "",
     amountPaid: "",
-    paymentDate: today,
+    paymentDate: "",
     paymentMethod: "",
     paymentStatus: "",
     });
