@@ -7,6 +7,8 @@ import EventsCard from "../Components/EventsCard";
 import PaymentsCard from "../Components/PaymentsCard";
 import AddStudentCard from "../Components/AddStudentCard";
 
+const API_URL = process.env.REACT_APP_API_BASE_URL;
+
 function Home({ onNavigate, onLogout, department, currentPage }) {
   const selectedDepartment = department || "College of Computer Studies";
   console.log("Home department:", department);
@@ -44,7 +46,7 @@ const current =
   useEffect(() => {
     async function loadEvents() {
       try {
-        const res = await fetch("https://localhost:7223/api/events", {
+        const res = await fetch(`${API_URL}/events`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         if (!res.ok) throw new Error(`Events API ${res.status}`);
@@ -62,7 +64,7 @@ const current =
   useEffect(() => {
     async function loadPayments() {
       try {
-        const res = await fetch("https://localhost:7223/api/payments", {
+        const res = await fetch(`${API_URL}/payments`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         if (!res.ok) throw new Error(`Payments API ${res.status}`);
@@ -81,9 +83,9 @@ const current =
     async function loadDashboard() {
       try {
         const [studentsRes, eventsRes, paymentsRes] = await Promise.all([
-          fetch("https://localhost:7223/api/students", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
-          fetch("https://localhost:7223/api/events", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
-          fetch("https://localhost:7223/api/payments", { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+          fetch(`${API_URL}/students`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+          fetch(`${API_URL}/events`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+          fetch(`${API_URL}/payments`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
         ]);
 
         const students = studentsRes.ok ? await studentsRes.json() : [];
