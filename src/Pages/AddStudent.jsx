@@ -94,6 +94,7 @@ function AddStudent({
 
   useEffect(() => {
     loadStudents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function loadStudents() {
