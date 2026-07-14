@@ -26,6 +26,9 @@ function AddPaymentModal({
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+
+     const today = new Date().toISOString().split("T")[0];
+
     if (!open) return;
 
     if (selectedPayment) {

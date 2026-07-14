@@ -20,10 +20,7 @@ const recentPayments = [...payments]
       {/* Payment List */}
       <div className="flex-1 space-y-7">
 
-        {[...payments]
-        .sort((a, b) => b.paymentID - a.paymentID)
-        .slice(0, 3)
-        .map((payment) => (
+        {recentPayments.map((payment) => (
           <div
             key={payment.paymentID}
             className="flex items-start justify-between"
