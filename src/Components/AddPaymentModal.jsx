@@ -24,6 +24,7 @@ function AddPaymentModal({
 
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
+  const [proofImage, setProofImage] = useState(null);
 
   useEffect(() => {
 
@@ -54,6 +55,7 @@ function AddPaymentModal({
     }
 
     setErrors({});
+    setProofImage(null);
   }, [open, selectedPayment]);
 
   if (!open) return null;
@@ -127,7 +129,7 @@ function AddPaymentModal({
     setSaving(true);
 
     try {
-      await onSave(formData);
+      await onSave(formData, proofImage);
       onClose();
     } finally {
       setSaving(false);
@@ -323,6 +325,31 @@ function AddPaymentModal({
                 />
 
             </div>
+                    {(formData.paymentMethod === "GCash" ||
+            formData.paymentMethod === "Bank Transfer") && (
+
+            <div className="md:col-span-2">
+
+                <label className="block mb-2 font-medium">
+                    Proof of Payment
+                </label>
+
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setProofImage(e.target.files[0])}
+                    className="w-full h-12 rounded-xl border px-3 py-2"
+                />
+
+                {proofImage && (
+                    <p className="text-sm text-green-700 mt-2">
+                        Selected: {proofImage.name}
+                    </p>
+                )}
+
+            </div>
+
+        )}
 
           </div>
 

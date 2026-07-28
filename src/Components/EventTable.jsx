@@ -1,7 +1,7 @@
 import React from "react";
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiEdit2, FiTrash2, FiEye } from "react-icons/fi";
 
-function EventTable({ events, onEdit, onDelete }) {
+function EventTable({ events, onEdit, onDelete, onViewReport }) {
   return (
     <div className="w-full overflow-x-auto rounded-xl">
 
@@ -55,7 +55,7 @@ function EventTable({ events, onEdit, onDelete }) {
             events.map((event) => (
 
               <tr
-                key={event.id}
+                key={event.eventID}
                 className="border-b last:border-none hover:bg-gray-50 transition"
               >
 
@@ -88,6 +88,14 @@ function EventTable({ events, onEdit, onDelete }) {
                   <div className="flex justify-center gap-4">
 
                     <button
+                        onClick={() => onViewReport(event)}
+                        className="text-green-700 hover:text-green-900"
+                        title="View Report"
+                    >
+                        <FiEye size={18} />
+                    </button>
+
+                    <button
                       onClick={() => onEdit(event)}
                       className="text-blue-600 hover:text-blue-800"
                     >
@@ -95,7 +103,7 @@ function EventTable({ events, onEdit, onDelete }) {
                     </button>
 
                     <button
-                      onClick={() => onDelete(event.id)}
+                      onClick={() => onDelete(event.eventID)}
                       className="text-red-600 hover:text-red-800"
                     >
                       <FiTrash2 size={18} />

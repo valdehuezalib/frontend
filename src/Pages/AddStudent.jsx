@@ -7,6 +7,7 @@ import Sidebar from "../Components/Sidebar";
 import SearchBar from "../Components/SearchBar";
 import StudentTable from "../Components/StudentTable";
 import AddStudentModal from "../Components/AddStudentModal";
+import StudentHistoryModal from "../Components/StudentHistoryModal";
 
 const API_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -91,6 +92,8 @@ function AddStudent({
   const [openModal, setOpenModal] = useState(false);
 
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyStudent, setHistoryStudent] = useState(null);
 
   const [error, setError] = useState(null);
 
@@ -131,6 +134,11 @@ function AddStudent({
   function handleEdit(student) {
     setSelectedStudent(student);
     setOpenModal(true);
+  }
+
+  function handleView(student) {
+  setHistoryStudent(student);
+  setHistoryOpen(true);
   }
 
   async function handleDelete(studentID) {
@@ -419,6 +427,7 @@ function AddStudent({
 
               <StudentTable
                 students={filteredStudents}
+                onView={handleView}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
               />
@@ -438,6 +447,13 @@ function AddStudent({
         onSave={handleSave}
         department={selectedDepartment}
       />
+
+      <StudentHistoryModal
+          open={historyOpen}
+          onClose={() => setHistoryOpen(false)}
+          student={historyStudent}
+      />
+      
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React from "react";
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiEye, FiEdit2, FiTrash2 } from "react-icons/fi";
 
-function StudentTable({ students, onEdit, onDelete }) {
+function StudentTable({ students, onView, onEdit, onDelete }) {
   return (
     <div className="overflow-x-auto rounded-2xl">
 
@@ -80,8 +80,17 @@ function StudentTable({ students, onEdit, onDelete }) {
                   <div className="flex justify-center gap-4">
 
                     <button
+                      onClick={() => onView(student)}
+                      className="text-green-700 hover:text-green-900"
+                      title="View Payment History"
+                    >
+                      <FiEye size={18} />
+                    </button>
+
+                    <button
                       onClick={() => onEdit(student)}
                       className="text-blue-600 hover:text-blue-800"
+                      title="Edit Student"
                     >
                       <FiEdit2 size={18} />
                     </button>
@@ -89,11 +98,12 @@ function StudentTable({ students, onEdit, onDelete }) {
                     <button
                       onClick={() => onDelete(student.studentID)}
                       className="text-red-600 hover:text-red-800"
+                      title="Delete Student"
                     >
                       <FiTrash2 size={18} />
                     </button>
 
-                  </div>
+                </div>
 
                 </td>
 

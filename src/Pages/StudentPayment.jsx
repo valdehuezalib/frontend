@@ -240,7 +240,7 @@ async function handleDelete(paymentID) {
 
 }
 
-async function handleSave(payment) {
+async function handleSave(payment, proofImage) {
 
     try {
 
@@ -286,8 +286,28 @@ async function handleSave(payment) {
 
             const created = await res.json();
 
-            setPayments((prev) => [...prev, created]);
+              if (
+                  proofImage &&
+                  (payment.paymentMethod === "GCash" ||
+                  payment.paymentMethod === "Bank Transfer")
+              ) {
+                  const formData = new FormData();
 
+                  formData.append("file", proofImage);
+
+                  await fetch(
+                      `${API_URL}/payments/${created.paymentID}/proof`,
+                      {
+                          method: "POST",
+                          headers: {
+                              Authorization: `Bearer ${localStorage.getItem("token")}`,
+                          },
+                          body: formData,
+                      }
+                  );
+              }
+
+              setPayments((prev) => [...prev, created]);
         }
 
         setOpenModal(false);

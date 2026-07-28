@@ -7,6 +7,7 @@ import Sidebar from "../Components/Sidebar";
 import SearchBar from "../Components/SearchBar";
 import EventTable from "../Components/EventTable";
 import AddEventModal from "../Components/AddEventModal";
+import EventReportModal from "../Components/EventReportModal";
 
 const API_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -43,6 +44,8 @@ function EventManagement({ onNavigate, onLogout, department, currentPage }) {
   const [sortBy, setSortBy] = useState("Newest");
   const [openModal, setOpenModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportEvent, setReportEvent] = useState(null);
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -156,6 +159,11 @@ function EventManagement({ onNavigate, onLogout, department, currentPage }) {
       showError("Error saving event. Please try again.");
     }
   };
+
+  const handleViewReport = (event) => {
+    setReportEvent(event);
+    setReportOpen(true);
+};
 
         const filteredEvents = [...events]
 
@@ -349,18 +357,27 @@ function EventManagement({ onNavigate, onLogout, department, currentPage }) {
                   events={filteredEvents}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
+                  onViewReport={handleViewReport}
                 />
               </div>
             </div>
           </div>
         </div>
       </div>
+      
       <AddEventModal
         open={openModal}
         onClose={() => setOpenModal(false)}
         selectedEvent={selectedEvent}
         onSave={handleSave}
       />
+
+      <EventReportModal
+          open={reportOpen}
+          onClose={() => setReportOpen(false)}
+          event={reportEvent}
+      />
+
     </div>
   );
 }
