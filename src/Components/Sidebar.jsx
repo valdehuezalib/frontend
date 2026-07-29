@@ -3,7 +3,6 @@ import LogoutModal from "./LogoutModal";
 
 import {
   FiHome,
-  FiGrid,
   FiLogOut,
   FiUserPlus,
   FiCalendar,
@@ -90,18 +89,7 @@ const [openLogout, setOpenLogout] = useState(false);
             Student Payment
           </button>
 
-          <button
-              onClick={() => onNavigate("dashboard")}
-              className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition
-                ${
-                  currentPage === "dashboard"
-                    ? "bg-green-900 text-white"
-                    : "hover:bg-gray-100 text-gray-700"
-                }`}
-            >
-              <FiGrid size={20} />
-              Dashboard
-            </button>
+          
 
         </div>
 
