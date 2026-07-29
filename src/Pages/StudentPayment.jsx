@@ -282,7 +282,10 @@ async function handleSave(payment, proofImage) {
                 }
             );
 
-            if (!res.ok) throw new Error();
+            if (!res.ok) {
+                const message = await res.text();
+                throw new Error(message);
+            }
 
             const created = await res.json();
 
@@ -312,11 +315,11 @@ async function handleSave(payment, proofImage) {
 
         setOpenModal(false);
 
-    } catch {
+          } catch (err) {
 
-        showError("Unable to save payment.");
+          showError(err.message);
 
-    }
+          }
 
 }
 
