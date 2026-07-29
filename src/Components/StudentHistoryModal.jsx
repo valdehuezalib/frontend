@@ -9,7 +9,6 @@ const API_URL = process.env.REACT_APP_API_BASE_URL;
 
 function StudentHistoryModal({ open, onClose, student }) {
 
-    const [students, setStudents] = useState([]);
     const [payments, setPayments] = useState([]);
     const [events, setEvents] = useState([]);
     const [search, setSearch] = useState("");
@@ -46,18 +45,7 @@ function StudentHistoryModal({ open, onClose, student }) {
         };
 
 
-    async function loadStudents() {
-
-        const res = await fetch(`${API_URL}/students`, {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-        });
-
-        if (res.ok) {
-            setStudents(await res.json());
-        }
-    }
+   
 
     async function loadPayments() {
 
@@ -92,8 +80,6 @@ function StudentHistoryModal({ open, onClose, student }) {
 
         async function loadData() {
 
-
-            await loadStudents();
             await loadPayments();
             await loadEvents();
 

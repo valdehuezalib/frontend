@@ -11,7 +11,6 @@ function EventReportModal({ open, onClose, event }) {
 
     const [students, setStudents] = useState([]);
     const [payments, setPayments] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
     const [yearFilter, setYearFilter] = useState("All");
@@ -79,12 +78,11 @@ function EventReportModal({ open, onClose, event }) {
 
         async function loadData() {
 
-            setLoading(true);
 
             await loadStudents();
             await loadPayments();
 
-            setLoading(false);
+
         }
 
         loadData();
