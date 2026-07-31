@@ -90,15 +90,19 @@ function StudentHistoryModal({ open, onClose, student }) {
     }, [open]);
 
     useEffect(() => {
-    if (open) {
-        document.body.style.overflow = "hidden";
-    } else {
-        document.body.style.overflow = "auto";
-    }
+        if (open) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "auto";
 
-    return () => {
-        document.body.style.overflow = "auto";
-    };
+            // Reset filters when the modal closes
+            setSearch("");
+            setStatusFilter("All");
+        }
+
+        return () => {
+            document.body.style.overflow = "auto";
+        };
     }, [open]);
 
     const handlePrint = useReactToPrint({
@@ -110,44 +114,60 @@ function StudentHistoryModal({ open, onClose, student }) {
      if (!open || !student) return null;
 
     const studentPayments = payments.filter(
-    payment => payment.studentID === student.studentID
+        payment => payment.studentID === student.studentID
     );
 
-    const filteredPayments = studentPayments.filter((payment) => {
+    const reportRows = events.map((event) => {
 
-       const event = events.find(
-            e => e.eventID === payment.eventID
+        const payment = studentPayments.find(
+            p => p.eventID === event.eventID
         );
 
+        return {
+            eventID: event.eventID,
+            eventName: event.eventName,
+            eventDate: event.eventDate,
+            eventFee: Number(event.eventFee),
+            paymentDate: payment?.paymentDate,
+            amountPaid: payment ? Number(payment.amountPaid) : 0,
+            paymentStatus: payment ? payment.paymentStatus : "Unpaid",
+            paymentID: payment?.paymentID
+        };
+
+    });
+
+    const filteredPayments = reportRows.filter((row) => {
+
         const matchesSearch =
-            event?.eventName
-                ?.toLowerCase()
+            row.eventName
+                .toLowerCase()
                 .includes(search.toLowerCase());
 
-         const matchesStatus =
+        const matchesStatus =
             statusFilter === "All" ||
-                payment.paymentStatus === statusFilter;
+            row.paymentStatus === statusFilter;
 
         return matchesSearch && matchesStatus;
+
     });
     
 
-   const totalEvents = studentPayments.length;
+   const totalEvents = events.length;
 
-    const paidEvents = studentPayments.filter(
-        payment => payment.paymentStatus === "Paid"
+    const paidEvents = reportRows.filter(
+        row => row.paymentStatus === "Paid"
     ).length;
 
-    const partialEvents = studentPayments.filter(
-        payment => payment.paymentStatus === "Partial"
+    const partialEvents = reportRows.filter(
+        row => row.paymentStatus === "Partial"
     ).length;
 
-    const unpaidEvents = studentPayments.filter(
-        payment => payment.paymentStatus === "Pending"
+    const unpaidEvents = reportRows.filter(
+        row => row.paymentStatus === "Unpaid"
     ).length;
 
-    const totalPaid = studentPayments.reduce(
-        (total, payment) => total + Number(payment.amountPaid),
+    const totalPaid = reportRows.reduce(
+        (total, row) => total + row.amountPaid,
         0
     );
 
@@ -290,7 +310,7 @@ function StudentHistoryModal({ open, onClose, student }) {
             </div>
 
             <div className="bg-white border rounded-2xl p-5">
-                <p className="text-gray-500 text-sm">Pending</p>
+                <p className="text-gray-500 text-sm">Unpaid</p>
                 <h2 className="text-3xl font-bold text-red-500 mt-2">
                     {unpaidEvents}
                 </h2>
@@ -331,8 +351,8 @@ function StudentHistoryModal({ open, onClose, student }) {
                 options={[
                     { value: "All", label: "All Status" },
                     { value: "Paid", label: "Paid" },
-                    { value: "Partial", label: "Partial" },
-                    { value: "Pending", label: "Pending" },
+                    { value: "Partial", label: "Partial" }, 
+                    { value: "Unpaid", label: "Unpaid" },
                 ]}
                 className="w-full lg:w-48"
                 styles={selectStyles}
@@ -404,71 +424,60 @@ function StudentHistoryModal({ open, onClose, student }) {
                                     className="border-t"
                                 >
 
-                                    {(() => {
+                                    
 
-                                        const event = events.find(
-                                            e => e.eventID === payment.eventID
-                                        );
+                                                                        <>
+                                    <td className="px-5 py-4">
+                                        {payment.eventName}
+                                    </td>
 
-                                        return (
-                                            <>
+                                    <td className="px-5 py-4">
+                                        {new Date(payment.eventDate).toLocaleDateString("en-US", {
+                                            month: "short",
+                                            day: "numeric",
+                                            year: "numeric",
+                                        })}
+                                    </td>
 
-                                                <td className="px-5 py-4">
-                                                    {event?.eventName || "-"}
-                                                </td>
+                                    <td className="px-5 py-4">
+                                        ₱ {payment.amountPaid.toLocaleString()}
+                                    </td>
 
-                                                <td className="px-5 py-4">
-                                                    {event
-                                                        ? new Date(event.eventDate).toLocaleDateString("en-US", {
-                                                            month: "short",
-                                                            day: "numeric",
-                                                            year: "numeric",
-                                                        })
-                                                        : "-"}
-                                                </td>
+                                    <td className="px-5 py-4 font-medium">
+                                        ₱ {Math.max(
+                                            0,
+                                            payment.eventFee - payment.amountPaid
+                                        ).toLocaleString()}
+                                    </td>
 
-                                                <td className="px-5 py-4">
-                                                    ₱ {Number(payment.amountPaid).toLocaleString()}
-                                                </td>
+                                    <td className="px-5 py-4">
+                                        {payment.paymentDate
+                                            ? new Date(payment.paymentDate).toLocaleDateString("en-US", {
+                                                month: "short",
+                                                day: "numeric",
+                                                year: "numeric",
+                                            })
+                                            : "-"}
+                                    </td>
 
-                                                <td className="px-5 py-4 font-medium">
-                                                    ₱ {Math.max(
-                                                        0,
-                                                        Number(event?.eventFee || 0) -
-                                                        Number(payment.amountPaid)
-                                                    ).toLocaleString()}
-                                                </td>
+                                    <td className="px-5 py-4">
+                                        <span
+                                            className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                                payment.paymentStatus === "Paid"
+                                                    ? "bg-green-100 text-green-700"
+                                                    : payment.paymentStatus === "Partial"
+                                                    ? "bg-yellow-100 text-yellow-700"
+                                                    : payment.paymentStatus === "Pending"
+                                                    ? "bg-orange-100 text-orange-700"
+                                                    : "bg-red-100 text-red-700"
+                                            }`}
+                                        >
+                                            {payment.paymentStatus}
+                                        </span>
+                                    </td>
+                                </>
 
-                                                <td className="px-5 py-4">
-                                                    {payment.paymentDate
-                                                        ? new Date(event.eventDate).toLocaleDateString("en-US", {
-                                                            month: "short",
-                                                            day: "numeric",
-                                                            year: "numeric",
-                                                        })
-                                                        : "-"}
-                                                </td>
-
-                                                <td className="px-5 py-4">
-
-                                                    <span
-                                                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                                                            payment.paymentStatus === "Paid"
-                                                                ? "bg-green-100 text-green-700"
-                                                                : payment.paymentStatus === "Partial"
-                                                                ? "bg-yellow-100 text-yellow-700"
-                                                                : "bg-red-100 text-red-700"
-                                                        }`}
-                                                    >
-                                                        {payment.paymentStatus}
-                                                    </span>
-
-                                                </td>
-
-                                            </>
-                                        );
-
-                                    })()}
+                                   
 
                                 </tr>
 

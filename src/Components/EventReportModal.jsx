@@ -90,15 +90,21 @@ function EventReportModal({ open, onClose, event }) {
     }, [open]);
 
     useEffect(() => {
-    if (open) {
-        document.body.style.overflow = "hidden";
-    } else {
-        document.body.style.overflow = "auto";
-    }
+        if (open) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "auto";
 
-    return () => {
-        document.body.style.overflow = "auto";
-    };
+            // Reset filters when the modal closes
+            setSearch("");
+            setStatusFilter("All");
+            setYearFilter("All");
+
+        }
+
+        return () => {
+            document.body.style.overflow = "auto";
+        };
     }, [open]);
 
     const handlePrint = useReactToPrint({
@@ -111,42 +117,56 @@ function EventReportModal({ open, onClose, event }) {
 
     const eventPayments = payments.filter(
     payment => payment.eventID === event.eventID
+);
+
+const reportRows = students.map((student) => {
+
+    const payment = eventPayments.find(
+        p => p.studentID === student.studentID
     );
 
-    const filteredPayments = eventPayments.filter((payment) => {
+    return {
+        studentID: student.studentID,
+        studentName: student.studentName,
+        yearLevel: student.yearLevel,
+        amountPaid: payment ? Number(payment.amountPaid) : 0,
+        paymentStatus: payment ? payment.paymentStatus : "Unpaid",
+        paymentID: payment?.paymentID
+    };
 
-        const student = students.find(
-            (s) => s.studentID === payment.studentID
-        );
+});
 
-        const matchesSearch =
-            payment.studentID.toLowerCase().includes(search.toLowerCase()) ||
-            payment.studentName.toLowerCase().includes(search.toLowerCase());
+const filteredPayments = reportRows.filter((row) => {
 
-        const matchesStatus =
-            statusFilter === "All" ||
-            payment.paymentStatus === statusFilter;
+    const matchesSearch =
+        row.studentID.toLowerCase().includes(search.toLowerCase()) ||
+        row.studentName.toLowerCase().includes(search.toLowerCase());
 
-        const matchesYear =
-            yearFilter === "All" ||
-            student?.yearLevel === Number(yearFilter);
+    const matchesStatus =
+        statusFilter === "All" ||
+        row.paymentStatus === statusFilter;
 
-        return matchesSearch && matchesStatus && matchesYear;
-    });
+    const matchesYear =
+        yearFilter === "All" ||
+        row.yearLevel === Number(yearFilter);
+
+    return matchesSearch && matchesStatus && matchesYear;
+});
     
 
     const totalStudents = students.length;
 
-    const paidStudents = eventPayments.filter(
-    payment => payment.paymentStatus === "Paid"
+    const paidStudents = reportRows.filter(
+        row => row.paymentStatus === "Paid"
     ).length;
 
-    const partialStudents = eventPayments.filter(
-    payment => payment.paymentStatus === "Partial"
+    const partialStudents = reportRows.filter(
+        row => row.paymentStatus === "Partial"
     ).length;
 
-    const unpaidStudents =
-    totalStudents - paidStudents - partialStudents;
+    const unpaidStudents = reportRows.filter(
+        row => row.paymentStatus === "Unpaid"
+    ).length;
 
     const totalCollected = eventPayments.reduce(
     (total, payment) => total + Number(payment.amountPaid),
@@ -190,7 +210,7 @@ function EventReportModal({ open, onClose, event }) {
               className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-900 text-white hover:bg-green-800"
             >
               <FiPrinter />
-              Print
+              Print/Save
             </button>
 
             <button
@@ -362,7 +382,7 @@ function EventReportModal({ open, onClose, event }) {
                     { value: "All", label: "All Status" },
                     { value: "Paid", label: "Paid" },
                     { value: "Partial", label: "Partial" },
-                    { value: "Pending", label: "Pending" },
+                    { value: "Unpaid", label: "Unpaid" },
                 ]}
                 className="w-full lg:w-48"
                 styles={selectStyles}
@@ -477,10 +497,12 @@ function EventReportModal({ open, onClose, event }) {
                                             className={`px-3 py-1 rounded-full text-sm font-medium
                                                 ${
                                                     payment.paymentStatus === "Paid"
-                                                        ? "bg-green-100 text-green-700"
-                                                        : payment.paymentStatus === "Partial"
-                                                        ? "bg-yellow-100 text-yellow-700"
-                                                        : "bg-red-100 text-red-700"
+                                                    ? "bg-green-100 text-green-700"
+                                                    : payment.paymentStatus === "Partial"
+                                                    ? "bg-yellow-100 text-yellow-700"
+                                                    : payment.paymentStatus === "Pending"
+                                                    ? "bg-orange-100 text-orange-700"
+                                                    : "bg-red-100 text-red-700"
                                                 }`}
                                         >
                                             {payment.paymentStatus}
