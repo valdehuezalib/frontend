@@ -35,7 +35,7 @@ function Modal({ message, type = "success", onClose }) {
   );
 }
 
-function Login({ mode = "login", onLogin, onRegister, onSwitch }) {
+function Login({ onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [department, setDepartment] = useState("");
@@ -43,66 +43,43 @@ function Login({ mode = "login", onLogin, onRegister, onSwitch }) {
   const [modalMessage, setModalMessage] = useState("");
   const [modalType, setModalType] = useState("success");
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+ async function handleSubmit(e) {
+  e.preventDefault();
 
-    try {
-      if (mode === "login") {
-       const response = await fetch(
-          `${API_URL}/treasurers/login?username=${username}&password=${password}`,
-          { method: "POST" }
-        );
-        if (!response.ok) {
-          setModalMessage("Login failed: Invalid username or password.");
-          setModalType("error");
-          return;
-        }
-
-        const data = await response.json();
-        console.log("Login response:", data); //
-        if (data.token) {
-          localStorage.setItem("token", data.token);
-
-        const dept =
-            data.department ||
-            "College of Computer Studies";
-
-          setModalMessage("Login successful!");
-          setModalType("success");
-
-          onLogin(dept);
-        }
-      } else {
-        const response = await fetch(
-          `${API_URL}/treasurers/register`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              username,
-              passwordHash: password,
-              department,
-            }),
-          }
-        );
-
-        if (response.ok) {
-          setModalMessage("Account registered successfully!");
-          setModalType("success");
-          onRegister();
-        } else {
-          const errorText = await response.text();
-          setModalMessage(
-            `Registration failed: ${errorText || "Please check your input."}`
-          );
-          setModalType("error");
-        }
+  try {
+    const response = await fetch(
+      `${API_URL}/treasurers/login?username=${username}&password=${password}`,
+      {
+        method: "POST",
       }
-    } catch (err) {
-      setModalMessage(`Error: ${err.message}`);
+    );
+
+    if (!response.ok) {
+      setModalMessage("Login failed: Invalid username or password.");
       setModalType("error");
+      return;
     }
+
+    const data = await response.json();
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("department", data.department);
+    localStorage.setItem("role", data.role);
+
+    const dept =
+      data.department ||
+      "College of Computer Studies";
+
+    setModalMessage("Login successful!");
+    setModalType("success");
+
+    onLogin(dept);
+
+  } catch (err) {
+    setModalMessage(`Error: ${err.message}`);
+    setModalType("error");
   }
+}
 
   return (
     <div
@@ -204,7 +181,7 @@ function Login({ mode = "login", onLogin, onRegister, onSwitch }) {
           font-light
           text-gray-900
           ">
-          {mode === "login" ? "Login" : "Register"}
+          Login
         </h2>
         <p className="
           text-sm
@@ -213,38 +190,11 @@ function Login({ mode = "login", onLogin, onRegister, onSwitch }) {
           mt-2
           mb-8
           ">
-          {mode === "login"
-            ? "Welcome to ALLFunds - Let's open your account"
-            : "Create your ALLFunds account"}
+          Welcome to ALLFunds - Let's open your account
         </p>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
-          {mode === "register" && (
-            <div>
-              <label className="block mb-2 text-sm sm:text-base font-medium text-gray-700">
-                Department
-              </label>
-              <select
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                className="w-full h-11 sm:h-12 lg:h-14 rounded-xl border border-gray-300 px-4 focus:ring-2 focus:ring-green-600 focus:outline-none"
-              >
-                <option value="">Select Department</option>
-                <option>College of Computer Studies</option>
-                <option>Bachelor of Science in Nursing</option>
-                <option>Bachelor of Science in Midwifery</option>
-                <option>Bachelor of Science in Radiologic Technology</option>
-                <option>Bachelor of Science in Medical Technology</option>
-                <option>Doctor of Medicine</option>
-                <option>Bachelor of Science in Pharmacy</option>
-                <option>Bachelor of Secondary Education & Elementary Education</option>
-                <option>Bachelor of Science in Hospitality Management</option>
-                <option>Bachelor of Science in Physical Therapy</option>
-                <option> Bachelor of Science in Accountancy &  Business Administration</option>
-              </select>
-            </div>
-          )}
 
           {/* Username */}
           <div>
@@ -287,23 +237,15 @@ function Login({ mode = "login", onLogin, onRegister, onSwitch }) {
             gap-3
             "
             >
-            {mode === "login" && (
-              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={showPassword}
-                  onChange={() => setShowPassword(!showPassword)}
-                />
-                Show Password
-              </label>
-            )}
-            <button
-              type="button"
-              onClick={onSwitch}
-              className="text-green-700 hover:underline text-sm font-medium"
-            >
-              {mode === "login" ? "Register Account" : "Back to Login"}
-            </button>
+            <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showPassword}
+                onChange={() => setShowPassword(!showPassword)}
+              />
+              Show Password
+            </label>
+                      
           </div>
 
           {/* Submit Button */}
@@ -326,7 +268,7 @@ function Login({ mode = "login", onLogin, onRegister, onSwitch }) {
               background: "linear-gradient(90deg,#064e3b,#0a5b39,#17784c)",
             }}
           >
-            {mode === "login" ? "Login" : "Register"}
+            Login
           </button>
         </form>
       </div>

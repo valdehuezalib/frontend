@@ -8,6 +8,7 @@ import SearchBar from "../Components/SearchBar";
 import PaymentTable from "../Components/PaymentTable";
 import AddPaymentModal from "../Components/AddPaymentModal";
 import ReceiptModal from "../Components/ReceiptModal";
+import DeleteConfirmationModal from "../Components/DeleteConfirmationModal";
 
 const API_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -16,13 +17,18 @@ function StudentPayment({
   onLogout,
   department,
   currentPage,
+  role,
   open,
   onClose,
 }) {
-
-const selectedDepartment = department || "College of Computer Studies";
+  
+const selectedDepartment =
+  role === "Admin"
+    ? "Admin"
+    : department || "College of Computer Studies (CCS)";
 
 const departmentInfo = {
+  "Admin": { short: "ADMIN", name: "System Administrator", color: "bg-green-900" },
   "College of Computer Studies (CCS)": {
     short: "CCS",
     name: "College of Computer Studies",
@@ -98,6 +104,8 @@ const [selectedPayment, setSelectedPayment] = useState(null);
 const [error, setError] = useState(null);
 const [sidebarOpen, setSidebarOpen] = useState(false);
 const [receiptOpen, setReceiptOpen] = useState(false);
+const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+const [paymentToDelete, setPaymentToDelete] = useState(null);
 
 const selectStyles = {
         control: (base) => ({
@@ -418,6 +426,7 @@ return (
             onNavigate={onNavigate}
             onLogout={onLogout}
             currentPage={currentPage}
+            role={role}
             sidebarOpen={sidebarOpen}
             setSidebarOpen={setSidebarOpen}
           />
@@ -543,7 +552,10 @@ return (
                 setReceiptOpen(true);
                 }}
               onEdit={handleEdit}
-              onDelete={handleDelete}
+              onDelete={(paymentID) => {
+                  setPaymentToDelete(paymentID);
+                  setDeleteModalOpen(true);
+              }}
             />
 
           </div>
@@ -569,6 +581,21 @@ return (
         events={events}
         open={receiptOpen}
         onClose={() => setReceiptOpen(false)}
+        />
+
+        <DeleteConfirmationModal
+            open={deleteModalOpen}
+            title="Delete Payment"
+            message="Are you sure you want to delete this payment record? This action cannot be undone."
+            onClose={() => {
+                setDeleteModalOpen(false);
+                setPaymentToDelete(null);
+            }}
+            onConfirm={async () => {
+                await handleDelete(paymentToDelete);
+                setDeleteModalOpen(false);
+                setPaymentToDelete(null);
+            }}
         />
 
   </div>

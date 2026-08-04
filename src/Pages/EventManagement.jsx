@@ -8,14 +8,20 @@ import SearchBar from "../Components/SearchBar";
 import EventTable from "../Components/EventTable";
 import AddEventModal from "../Components/AddEventModal";
 import EventReportModal from "../Components/EventReportModal";
+import DeleteConfirmationModal from "../Components/DeleteConfirmationModal";
+
 
 const API_URL = process.env.REACT_APP_API_BASE_URL;
 
 
-function EventManagement({ onNavigate, onLogout, department, currentPage }) {
-  const selectedDepartment = department || "College of Computer Studies";
+function EventManagement({ onNavigate, onLogout, department, currentPage, role }) {
+const selectedDepartment =
+  role === "Admin"
+    ? "Admin"
+    : department || "College of Computer Studies (CCS)";
 
   const departmentInfo = {
+    "Admin": { short: "ADMIN", name: "System Administrator", color: "bg-green-900" },
     "College of Computer Studies (CCS)": { short: "CCS", name: "College of Computer Studies", color: "bg-green-900" },
     "Bachelor of Science in Nursing (BSN)": { short: "BSN", name: "Bachelor of Science in Nursing", color: "bg-green-900" },
     "Bachelor of Science in Midwifery (BSM)": { short: "BSM", name: "Bachelor of Science in Midwifery", color: "bg-green-900" },
@@ -48,6 +54,8 @@ function EventManagement({ onNavigate, onLogout, department, currentPage }) {
   const [reportEvent, setReportEvent] = useState(null);
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState(null);
 
 
   const selectStyles = {
@@ -120,7 +128,9 @@ function EventManagement({ onNavigate, onLogout, department, currentPage }) {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (!res.ok) throw new Error("Failed to delete event");
-      setEvents(events.filter((ev) => ev.id !== eventID));
+      setEvents((prev) =>
+          prev.filter((ev) => ev.eventID !== eventID)
+      );
     } catch (err) {
       console.error(err);
       showError("Error deleting event. Please try again.");
@@ -249,7 +259,12 @@ function EventManagement({ onNavigate, onLogout, department, currentPage }) {
         <Navbar current={current} onNavigate={onNavigate} currentPage={currentPage} toggleSidebar={() => setSidebarOpen(true)} />
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
             <div className="lg:col-span-2 order-2 lg:order-1">
-            <Sidebar current={current} onNavigate={onNavigate} onLogout={onLogout} currentPage={currentPage} sidebarOpen={sidebarOpen}
+            <Sidebar current={current} 
+            onNavigate={onNavigate} 
+            onLogout={onLogout} 
+            currentPage={currentPage} 
+            role={role}
+            sidebarOpen={sidebarOpen}
               setSidebarOpen={setSidebarOpen} />
           </div>
           <div className="lg:col-span-10 order-1 lg:order-2 flex flex-col">
@@ -356,7 +371,10 @@ function EventManagement({ onNavigate, onLogout, department, currentPage }) {
                 <EventTable
                   events={filteredEvents}
                   onEdit={handleEdit}
-                  onDelete={handleDelete}
+                  onDelete={(event) => {
+                      setEventToDelete(event);
+                      setDeleteModalOpen(true);
+                  }}
                   onViewReport={handleViewReport}
                 />
               </div>
@@ -376,6 +394,25 @@ function EventManagement({ onNavigate, onLogout, department, currentPage }) {
           open={reportOpen}
           onClose={() => setReportOpen(false)}
           event={reportEvent}
+      />
+
+      <DeleteConfirmationModal
+          open={deleteModalOpen}
+          title="Delete Event"
+          message={
+              eventToDelete
+                  ? `Are you sure you want to delete "${eventToDelete.eventName}"? This action cannot be undone.`
+                  : ""
+          }
+          onClose={() => {
+              setDeleteModalOpen(false);
+              setEventToDelete(null);
+          }}
+          onConfirm={async () => {
+              await handleDelete(eventToDelete.eventID);
+              setDeleteModalOpen(false);
+              setEventToDelete(null);
+          }}
       />
 
     </div>

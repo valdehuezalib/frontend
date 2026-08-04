@@ -103,7 +103,7 @@ function EventTable({ events, onEdit, onDelete, onViewReport }) {
                     </button>
 
                     <button
-                      onClick={() => onDelete(event.eventID)}
+                      onClick={() => onDelete(event)}
                       className="text-red-600 hover:text-red-800"
                     >
                       <FiTrash2 size={18} />

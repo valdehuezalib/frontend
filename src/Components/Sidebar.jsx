@@ -7,9 +7,10 @@ import {
   FiUserPlus,
   FiCalendar,
   FiDollarSign,
+  FiUsers,
 } from "react-icons/fi";
 
-function Sidebar({ current, onNavigate, onLogout, currentPage }) {
+function Sidebar({ current, onNavigate, onLogout, currentPage, role }) {
 
 const [openLogout, setOpenLogout] = useState(false);
 
@@ -34,60 +35,71 @@ const [openLogout, setOpenLogout] = useState(false);
         {/* Menu */}
         <div className="mt-8 space-y-3">
 
-          {/* Active */}
+          {/* Home */}
           <button
-              onClick={() => onNavigate("home")}
-              className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition
-                ${
-                  currentPage === "home"
-                    ? "bg-green-900 text-white"
-                    : "hover:bg-gray-100 text-gray-700"
-                }`}
-            >
+            onClick={() => onNavigate("home")}
+            className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition ${
+              currentPage === "home"
+                ? "bg-green-900 text-white"
+                : "hover:bg-gray-100 text-gray-700"
+            }`}
+          >
             <FiHome size={20} />
-
             Home
-
           </button>
 
-          <button
-              onClick={() => onNavigate("addstudent")}
-              className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition
-                ${
+          {/* Admin Menu */}
+          {role === "Admin" ? (
+            <button
+              onClick={() => onNavigate("treasurers")}
+              className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition ${
+                currentPage === "treasurers"
+                  ? "bg-green-900 text-white"
+                  : "hover:bg-gray-100 text-gray-700"
+              }`}
+            >
+              <FiUserPlus size={20} />
+              Manage Treasurers
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => onNavigate("addstudent")}
+                className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition ${
                   currentPage === "addstudent"
                     ? "bg-green-900 text-white"
                     : "hover:bg-gray-100 text-gray-700"
                 }`}
-            >
-            <FiUserPlus size={20} />
-            Add Student
-          </button>
+              >
+                <FiUserPlus size={20} />
+                Add Student
+              </button>
 
-          <button
-            onClick={() => onNavigate("eventmanagement")}
-            className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition
-              ${
-                currentPage === "eventmanagement"
-                  ? "bg-green-900 text-white"
-                  : "hover:bg-gray-100 text-gray-700"
-              }`}
-          >
-            <FiCalendar size={20} />
-            Event Management
-          </button>
+              <button
+                onClick={() => onNavigate("eventmanagement")}
+                className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition ${
+                  currentPage === "eventmanagement"
+                    ? "bg-green-900 text-white"
+                    : "hover:bg-gray-100 text-gray-700"
+                }`}
+              >
+                <FiCalendar size={20} />
+                Event Management
+              </button>
 
-          <button
-            onClick={() => onNavigate("studentpayment")}
-            className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition
-              ${
-                currentPage === "studentpayment"
-                  ? "bg-green-900 text-white"
-                  : "hover:bg-gray-100 text-gray-700"
-              }`}
-          >
-            <FiDollarSign size={20} />
-            Student Payment
-          </button>
+              <button
+                onClick={() => onNavigate("studentpayment")}
+                className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition ${
+                  currentPage === "studentpayment"
+                    ? "bg-green-900 text-white"
+                    : "hover:bg-gray-100 text-gray-700"
+                }`}
+              >
+                <FiDollarSign size={20} />
+                Student Payment
+              </button>
+            </>
+          )}
 
           
 

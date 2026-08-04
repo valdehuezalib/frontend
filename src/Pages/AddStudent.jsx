@@ -8,6 +8,7 @@ import SearchBar from "../Components/SearchBar";
 import StudentTable from "../Components/StudentTable";
 import AddStudentModal from "../Components/AddStudentModal";
 import StudentHistoryModal from "../Components/StudentHistoryModal";
+import DeleteConfirmationModal from "../Components/DeleteConfirmationModal";
 
 const API_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -16,10 +17,17 @@ function AddStudent({
   onLogout,
   department,
   currentPage,
+  role,
 }) {
-  const selectedDepartment = department || "College of Computer Studies (CCS)";
+
+const selectedDepartment =
+  role === "Admin"
+    ? "Admin"
+    : department || "College of Computer Studies (CCS)";
+
 
   const departmentInfo = {
+    "Admin": { short: "ADMIN", name: "System Administrator", color: "bg-green-900" },
     "College of Computer Studies (CCS)": {
       short: "CCS",
       name: "College of Computer Studies",
@@ -96,6 +104,11 @@ function AddStudent({
   const [historyStudent, setHistoryStudent] = useState(null);
 
   const [error, setError] = useState(null);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState(null);
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     loadStudents();
@@ -263,22 +276,24 @@ function AddStudent({
           current={current}
           onNavigate={onNavigate}
           currentPage={currentPage}
+          toggleSidebar={() => setSidebarOpen(true)}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
 
-          <div className="lg:col-span-2 lg:h-full ">
+          <div className="lg:col-span-2 order-2 lg:order-1">
             <Sidebar
               current={current}
               onNavigate={onNavigate}
               onLogout={onLogout}
               currentPage={currentPage}
+              role={role}
+              sidebarOpen={sidebarOpen}
+              setSidebarOpen={setSidebarOpen}
             />
           </div>
 
-          <div className="lg:col-span-10 flex flex-col">
-
-
+          <div className="lg:col-span-10 order-1 lg:order-2 flex flex-col">
 
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
 
@@ -301,7 +316,7 @@ function AddStudent({
             </div>
 
             {error && (
-              <div className="bg-red-100 text-red-700 rounded-xl px-4 py-3 mb-4">
+              <div className="mb-4 px-4 py-3 bg-red-100 text-red-700 rounded-xl text-sm sm:text-base">
                 {error}
               </div>
             )}
@@ -411,7 +426,7 @@ function AddStudent({
 
             </div>
 
-            <div className="bg-white rounded-3xl shadow-sm mt-4 flex-1 p-4 md:p-8 overflow-auto">
+            <div className="bg-white rounded-3xl shadow-sm mt-4 flex-1 p-4 sm:p-6 lg:p-8 overflow-x-auto">
 
               <div className="mb-8">
 
@@ -425,13 +440,17 @@ function AddStudent({
 
               </div>
 
-              <StudentTable
-                students={filteredStudents}
-                onView={handleView}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-
+              <div className="overflow-x-auto">
+                  <StudentTable
+                      students={filteredStudents}
+                      onView={handleView}
+                      onEdit={handleEdit}
+                      onDelete={(student) => {
+                          setStudentToDelete(student);
+                          setDeleteModalOpen(true);
+                      }}
+                  />
+              </div>
             </div>
 
           </div>
@@ -452,6 +471,25 @@ function AddStudent({
           open={historyOpen}
           onClose={() => setHistoryOpen(false)}
           student={historyStudent}
+      />
+
+      <DeleteConfirmationModal
+          open={deleteModalOpen}
+          title="Delete Student"
+          message={
+              studentToDelete
+                  ? `Are you sure you want to delete "${studentToDelete.studentName}"? This action cannot be undone.`
+                  : ""
+          }
+          onClose={() => {
+              setDeleteModalOpen(false);
+              setStudentToDelete(null);
+          }}
+          onConfirm={async () => {
+              await handleDelete(studentToDelete.studentID);
+              setDeleteModalOpen(false);
+              setStudentToDelete(null);
+          }}
       />
       
     </div>

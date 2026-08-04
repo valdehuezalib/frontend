@@ -9,11 +9,14 @@ import AddStudentCard from "../Components/AddStudentCard";
 
 const API_URL = process.env.REACT_APP_API_BASE_URL;
 
-function Home({ onNavigate, onLogout, department, currentPage }) {
-  const selectedDepartment = department || "College of Computer Studies";
-  console.log("Home department:", department);
+function Home({ onNavigate, onLogout, department, currentPage, role }) {
+const selectedDepartment =
+  role === "Admin"
+    ? "Admin"
+    : department || "College of Computer Studies (CCS)";
 
   const departmentInfo = {
+    "Admin": { short: "ADMIN", name: "System Administrator", color: "bg-green-900" },
     "College of Computer Studies (CCS)": { short: "CCS", name: "College of Computer Studies", color: "bg-green-900" },
     "Bachelor of Science in Nursing (BSN)": { short: "BSN", name: "Bachelor of Science in Nursing", color: "bg-green-900" },
     "Bachelor of Science in Midwifery (BSM)": { short: "BSM", name: "Bachelor of Science in Midwifery", color: "bg-green-900" },
@@ -121,8 +124,14 @@ const current =
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
 
           <div className="lg:col-span-2 order-3 lg:order-1">
-            <Sidebar current={current} onNavigate={onNavigate} onLogout={onLogout} currentPage={currentPage} sidebarOpen={sidebarOpen}
-              setSidebarOpen={setSidebarOpen} />
+            <Sidebar current={current}
+             onNavigate={onNavigate} 
+             onLogout={onLogout} 
+             currentPage={currentPage} 
+             role={role}
+             sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen} 
+            />
           </div>
 
           <div className="lg:col-span-7 order-1 lg:order-2 flex flex-col gap-4">
@@ -130,7 +139,9 @@ const current =
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
                 Home - <span className="text-green-900">{current.short}</span>
               </h1>
-              <p className="text-gray-500 mt-1">Welcome back, Treasurer.</p>
+              <p className="text-gray-500 mt-1">
+                  Welcome back, {role === "Admin" ? "Administrator" : "Treasurer"}.
+              </p>
             </div>
             <div>
               {dashboard ? (

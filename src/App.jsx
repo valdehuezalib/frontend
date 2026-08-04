@@ -4,19 +4,26 @@ import Home from "./Pages/Home";
 import EventManagement from "./Pages/EventManagement";
 import AddStudent from "./Pages/AddStudent";
 import StudentPayment from "./Pages/StudentPayment";
+import ManageTreasurers from "./Pages/ManageTreasurers";
+import AdminHome from "./Pages/AdminHome";
 
 function App() {
   const [mode, setMode] = useState("login");          // login or register
   const [isAuthenticated, setIsAuthenticated] = useState(false); // track login
   const [currentPage, setCurrentPage] = useState("home"); // home or eventmanagement
   const [department, setDepartment] = useState(null);
+  const [role, setRole] = useState(null);
 
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    setCurrentPage("home"); // reset to home or login
-    setDepartment(null); 
-    localStorage.removeItem("token"); // optional: clear token
+    setCurrentPage("home");
+    setDepartment(null);
+    setRole(null);
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("department");
+    localStorage.removeItem("role");
   };
 
   return (
@@ -24,10 +31,12 @@ function App() {
       {!isAuthenticated ? (
         <Login
           mode={mode}
-          onLogin={(dept) => { 
-            console.log("Department from login:", dept);  // 🔹 Login passes department
-            setIsAuthenticated(true);
-            setDepartment(dept);
+          onLogin={(dept) => {
+              setIsAuthenticated(true);
+              setDepartment(dept);
+
+              // Read the role saved by Login.jsx
+              setRole(localStorage.getItem("role"));
           }}
           onRegister={() => setMode("login")}
           onSwitch={() => setMode(mode === "login" ? "register" : "login")}
@@ -35,19 +44,31 @@ function App() {
       ) : (
         <>
           {currentPage === "home" && (
-            <Home
+            role === "Admin" ? (
+              <AdminHome
+                currentPage={currentPage}
+                onNavigate={(page) => setCurrentPage(page)}
+                onLogout={handleLogout}
+                role={role}
+              />
+            ) : (
+              <Home
                 currentPage={currentPage}
                 onNavigate={(page) => setCurrentPage(page)}
                 onLogout={handleLogout}
                 department={department}
-            />
+                role={role}
+              />
+            )
           )}
+
           {currentPage === "eventmanagement" && (
             <EventManagement
             onNavigate={(page) => setCurrentPage(page)} 
             onLogout={handleLogout}
             department={department}
             currentPage={currentPage}
+            role={role}
             />
           )}
 
@@ -57,6 +78,7 @@ function App() {
               onNavigate={(page) => setCurrentPage(page)}
               onLogout={handleLogout}
               department={department}
+              role={role}
             />
           )}
 
@@ -66,9 +88,22 @@ function App() {
               onNavigate={(page) => setCurrentPage(page)}
               onLogout={handleLogout}
               department={department}
+              role={role}
             />
           )}
           
+          {(currentPage === "treasurers" ||
+            currentPage === "treasurers:add") && (
+            <ManageTreasurers
+                currentPage="treasurers"
+                autoOpenAdd={currentPage === "treasurers:add"}
+                onNavigate={(page) => setCurrentPage(page)}
+                onLogout={handleLogout}
+                department={department}
+                role={role}
+            />
+          )}
+
         </>
       )}
     </div>
