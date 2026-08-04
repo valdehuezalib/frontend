@@ -7,7 +7,6 @@ import {
   FiUserPlus,
   FiCalendar,
   FiDollarSign,
-  FiUsers,
 } from "react-icons/fi";
 
 function Sidebar({ current, onNavigate, onLogout, currentPage, role }) {

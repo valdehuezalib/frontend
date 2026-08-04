@@ -38,7 +38,6 @@ function Modal({ message, type = "success", onClose }) {
 function Login({ onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [department, setDepartment] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalType, setModalType] = useState("success");
