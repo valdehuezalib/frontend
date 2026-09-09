@@ -303,7 +303,11 @@ return (
 
                   {filteredTreasurers.map((treasurer) => (
 
-                    
+                    <tr
+                      key={treasurer.treasurerID}
+                      className="border-b hover:bg-gray-50 transition"
+                    >
+
                       <td className="py-4 px-2">
                         {treasurer.treasurerID}
                       </td>
