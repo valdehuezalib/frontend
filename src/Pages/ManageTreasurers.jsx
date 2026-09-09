@@ -277,9 +277,7 @@ return (
 
                   <tr className="border-b text-left text-gray-500">
 
-                    <th className="py-4 px-2 font-semibold text-sm whitespace-nowrap">
-                      ID
-                    </th>
+                   
 
                     <th className="py-4 px-2 font-semibold text-sm whitespace-nowrap">
                       Username
@@ -305,11 +303,7 @@ return (
 
                   {filteredTreasurers.map((treasurer) => (
 
-                    <tr
-                      key={treasurer.treasurerID}
-                      className="border-b hover:bg-gray-50 transition"
-                    >
-
+                    
                       <td className="py-4 px-2">
                         {treasurer.treasurerID}
                       </td>
