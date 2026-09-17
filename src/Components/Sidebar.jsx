@@ -7,6 +7,7 @@ import {
   FiUserPlus,
   FiCalendar,
   FiDollarSign,
+  FiLayers,
 } from "react-icons/fi";
 
 function Sidebar({ current, onNavigate, onLogout, currentPage, role }) {
@@ -22,11 +23,11 @@ const [openLogout, setOpenLogout] = useState(false);
         <div className={`${current?.color || "bg-green-900"} rounded-3xl p-5 text-white`}>
 
           <h2 className="text-3xl font-bold">
-            {current?.short || "CCS"}
+            {current?.short || ""}
           </h2>
 
           <p className="text-sm opacity-90 mt-1">
-            {current?.name || "College of Computer Studies"}
+            {current?.name || ""}
           </p>
 
         </div>
@@ -49,6 +50,8 @@ const [openLogout, setOpenLogout] = useState(false);
 
           {/* Admin Menu */}
           {role === "Admin" ? (
+          <>
+            {/* Manage Treasurers */}
             <button
               onClick={() => onNavigate("treasurers")}
               className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition ${
@@ -60,7 +63,21 @@ const [openLogout, setOpenLogout] = useState(false);
               <FiUserPlus size={20} />
               Manage Treasurers
             </button>
-          ) : (
+
+            {/* Manage Departments */}
+            <button
+              onClick={() => onNavigate("departments")}
+              className={`w-full flex items-center gap-3 rounded-xl px-5 py-4 transition ${
+                currentPage === "departments"
+                  ? "bg-green-900 text-white"
+                  : "hover:bg-gray-100 text-gray-700"
+              }`}
+            >
+              <FiLayers size={20} />
+              Manage Departments
+            </button>
+          </>
+        ) : (
             <>
               <button
                 onClick={() => onNavigate("addstudent")}

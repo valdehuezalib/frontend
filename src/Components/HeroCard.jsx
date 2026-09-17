@@ -25,7 +25,7 @@ function HeroCard({ current, dashboard }) {
 
       <div className="relative z-10 h-full p-10 flex flex-col justify-between">
         <div>
-          <h1 className="text-1xl font-bold mt-1">Hello, {current.short}!</h1>
+          <h1 className="text-xl font-bold mt-1">Hello, {current.short}!</h1>
           <p className="text-sm opacity-70 mt-1">{current.name}</p>
         </div>
 

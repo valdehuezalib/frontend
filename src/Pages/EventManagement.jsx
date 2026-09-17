@@ -15,33 +15,31 @@ const API_URL = process.env.REACT_APP_API_BASE_URL;
 
 
 function EventManagement({ onNavigate, onLogout, department, currentPage, role }) {
-const selectedDepartment =
+const current =
   role === "Admin"
-    ? "Admin"
-    : department || "College of Computer Studies (CCS)";
-
-  const departmentInfo = {
-    "Admin": { short: "ADMIN", name: "System Administrator", color: "bg-green-900" },
-    "College of Computer Studies (CCS)": { short: "CCS", name: "College of Computer Studies", color: "bg-green-900" },
-    "Bachelor of Science in Nursing (BSN)": { short: "BSN", name: "Bachelor of Science in Nursing", color: "bg-green-900" },
-    "Bachelor of Science in Midwifery (BSM)": { short: "BSM", name: "Bachelor of Science in Midwifery", color: "bg-green-900" },
-    "Bachelor of Science in Radiologic Technology (BSRT)": { short: "BSRT", name: "Bachelor of Science in Radiologic Technology", color: "bg-green-900" },
-    "Bachelor of Science in Medical Technology (BSMT)": { short: "BSMT", name: "Bachelor of Science in Medical Technology", color: "bg-green-900" },
-    "Doctor of Medicine (MED)": { short: "MED", name: "Doctor of Medicine", color: "bg-green-900" },
-    "Bachelor of Science in Pharmacy (PHARMA)": { short: "PHARMA", name: "Bachelor of Science in Pharmacy", color: "bg-green-900" },
-    "Bachelor of Secondary Education & Elementary Education (BSED)": { short: "BSED", name: "Bachelor of Secondary Education & Elementary Education", color: "bg-green-900" },
-    "Bachelor of Science in Hospitality Management (BSHM)": { short: "BSHM", name: "Bachelor of Science in Hospitality Management", color: "bg-green-900" },
-    "Bachelor of Science in Physical Therapy (BSPT)": { short: "BSPT", name: "Bachelor of Science in Physical Therapy", color: "bg-green-900" },
-    "Bachelor of Science in Accountancy & Business Administration (BSA/BA)": { short: "BSA/BA", name: "Bachelor of Science in Accountancy & Business Administration", color: "bg-green-900" },
-  };
-
-  const current =
-  departmentInfo[selectedDepartment] ||
-  {
-    short: "",
-    name: "",
-    color: "bg-green-900",
-  };
+    ? {
+        short: "ADMIN",
+        name: "System Administrator",
+        color: "bg-green-900",
+      }
+    : {
+        short: department
+        ? department
+            .replace(/\s*\([^)]*\)/g, "")
+            .split(" ")
+            .filter(
+              (word) =>
+                !["of", "in", "and", "&", "the"].includes(
+                  word.toLowerCase()
+                )
+            )
+            .map((word) => word[0])
+            .join("")
+            .toUpperCase()
+        : "",
+        name: department || "",
+        color: "bg-green-900",
+      };
 
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState("");

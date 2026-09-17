@@ -5,6 +5,9 @@ import Sidebar from "../Components/Sidebar";
 import AdminHeroCard from "../Components/AdminHeroCard";
 import FinancialReportModal from "../Components/FinancialReportModal";
 
+import ManageDepartments from "./ManageDepartments";
+import ManageTreasurers from "./ManageTreasurers";
+
 const API_URL = process.env.REACT_APP_API_BASE_URL;
 
 function AdminHome({
@@ -13,7 +16,6 @@ function AdminHome({
   currentPage,
   role,
 }) {
-
   const current = {
     short: "ADMIN",
     name: "System Administrator",
@@ -33,7 +35,6 @@ function AdminHome({
 
   async function loadDashboard() {
     try {
-
       const token = localStorage.getItem("token");
 
       const [paymentsRes, treasurersRes] = await Promise.all([
@@ -54,9 +55,6 @@ function AdminHome({
         ? await paymentsRes.json()
         : [];
 
-        console.log("Payments Response OK:", paymentsRes.ok);
-        console.log("Payments:", payments);
-
       const treasurerData = treasurersRes.ok
         ? await treasurersRes.json()
         : [];
@@ -70,19 +68,18 @@ function AdminHome({
       );
 
       const totalAdmins = treasurerData.filter(
-        t => t.role === "Admin"
+        (t) => t.role === "Admin"
       ).length;
 
       const totalTreasurers = treasurerData.filter(
-        t => t.role === "Treasurer"
+        (t) => t.role === "Treasurer"
       ).length;
 
-      const totalDepartments =
-        new Set(
-          treasurerData
-            .filter(t => t.role === "Treasurer")
-            .map(t => t.department)
-        ).size;
+      const totalDepartments = new Set(
+        treasurerData
+          .filter((t) => t.role === "Treasurer")
+          .map((t) => t.department)
+      ).size;
 
       setDashboard({
         totalFunds,
@@ -93,21 +90,275 @@ function AdminHome({
 
       setMessage("Dashboard updated.");
 
-        setTimeout(() => {
-            setMessage("");
-        }, 2000);
-
+      setTimeout(() => {
+        setMessage("");
+      }, 2000);
     } catch (err) {
       console.log(err);
     }
   }
 
-  return (
+  /*
+   * ADMIN MAIN CONTENT
+   *
+   * The Navbar and Sidebar stay in AdminHome.
+   * Only this content changes depending on currentPage.
+   */
+  const renderMainContent = () => {
+    // MANAGE DEPARTMENTS
+    if (currentPage === "departments") {
+      return <ManageDepartments />;
+    }
 
+    // MANAGE TREASURERS
+    if (
+      currentPage === "treasurers" ||
+      currentPage === "treasurers:add"
+    ) {
+      return (
+        <ManageTreasurers
+          currentPage="treasurers"
+          autoOpenAdd={currentPage === "treasurers:add"}
+          onNavigate={onNavigate}
+          onLogout={onLogout}
+          department={null}
+          role={role}
+        />
+      );
+    }
+
+    // ADMIN DASHBOARD
+    return (
+      <>
+        <div>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+            Admin Dashboard
+          </h1>
+
+          <p className="text-gray-500 mt-1">
+            Welcome back, Administrator.
+          </p>
+
+          {message && (
+            <div className="mt-4 bg-green-100 text-green-700 px-4 py-3 rounded-xl">
+              {message}
+            </div>
+          )}
+        </div>
+
+        {dashboard && (
+          <AdminHeroCard
+            dashboard={dashboard}
+            onFinancialReport={() =>
+              setFinancialReportOpen(true)
+            }
+          />
+        )}
+
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 flex-1">
+
+          {/* Recent Accounts */}
+          <div className="xl:col-span-2 bg-white rounded-3xl shadow-sm p-6">
+
+            <div className="flex justify-between items-center mb-6">
+
+              <div>
+                <h2 className="text-2xl font-bold">
+                  Recent Treasurer Accounts
+                </h2>
+
+                <p className="text-gray-500">
+                  Recently registered accounts
+                </p>
+              </div>
+
+              <button
+                onClick={() => onNavigate("treasurers")}
+                className="bg-green-900 text-white rounded-full px-5 py-2 hover:bg-green-800 transition"
+              >
+                Manage Treasurers
+              </button>
+
+            </div>
+
+            <div className="space-y-4">
+
+              {treasurers
+                .slice()
+                .reverse()
+                .slice(0, 5)
+                .map((t, index) => (
+
+                  <div
+                    key={t.treasurerID || index}
+                    className="flex justify-between items-center border rounded-2xl p-4 hover:bg-gray-50 transition"
+                  >
+
+                    <div>
+
+                      <h3 className="font-bold text-lg text-green-900">
+                        {t.username}
+                      </h3>
+
+                      <p className="text-gray-500 text-sm">
+                        {t.department}
+                      </p>
+
+                    </div>
+
+                    <div className="flex items-center gap-3">
+
+                      <span
+                        className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                          t.role === "Admin"
+                            ? "bg-purple-100 text-purple-700"
+                            : "bg-green-100 text-green-700"
+                        }`}
+                      >
+                        {t.role}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                ))}
+
+            </div>
+
+          </div>
+
+          {/* Quick Actions */}
+          <div className="bg-white rounded-3xl shadow-sm p-6">
+
+            <h2 className="text-2xl font-bold mb-2">
+              Quick Actions
+            </h2>
+
+            <p className="text-gray-500 mb-6">
+              Administrator shortcuts
+            </p>
+
+            <div className="space-y-4">
+
+              <button
+                onClick={() => onNavigate("treasurers")}
+                className="w-full bg-green-900 hover:bg-green-800 text-white rounded-2xl py-4 font-semibold transition"
+              >
+                Manage Treasurers
+              </button>
+
+              <button
+                onClick={() => onNavigate("treasurers:add")}
+                className="w-full border-2 border-green-900 text-green-900 rounded-2xl py-4 font-semibold hover:bg-green-50 transition"
+              >
+                Add Treasurer
+              </button>
+
+              <button
+                onClick={() => onNavigate("departments")}
+                className="w-full border-2 border-blue-700 text-blue-700 rounded-2xl py-4 font-semibold hover:bg-blue-50 transition"
+              >
+                Manage Departments
+              </button>
+
+              <button
+                onClick={loadDashboard}
+                className="w-full border rounded-2xl py-4 font-semibold hover:bg-gray-100 transition"
+              >
+                Refresh Dashboard
+              </button>
+
+            </div>
+
+            <div className="mt-6 border-t pt-6">
+
+              <h3 className="text-xl font-bold mb-4">
+                System Summary
+              </h3>
+
+              <div className="space-y-4">
+
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">
+                    Total Accounts
+                  </span>
+
+                  <span className="font-bold text-lg">
+                    {treasurers.length}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">
+                    Treasurer Accounts
+                  </span>
+
+                  <span className="font-bold text-lg text-green-700">
+                    {dashboard?.totalStudents}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">
+                    Administrator Accounts
+                  </span>
+
+                  <span className="font-bold text-lg text-purple-700">
+                    {dashboard?.totalEvents}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">
+                    Departments Covered
+                  </span>
+
+                  <span className="font-bold text-lg text-blue-700">
+                    {dashboard?.totalPayments}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">
+                    Total Funds
+                  </span>
+
+                  <span className="font-bold text-lg text-green-900">
+                    ₱{" "}
+                    {Number(
+                      dashboard?.totalFunds || 0
+                    ).toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">
+                    System Status
+                  </span>
+
+                  <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">
+                    Online
+                  </span>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </>
+    );
+  };
+
+  return (
     <div className="min-h-screen bg-gray-200 p-2 sm:p-4 overflow-x-hidden">
 
       <div className="max-w-screen-2xl mx-auto min-h-screen flex flex-col">
 
+        {/* NAVBAR */}
         <Navbar
           current={current}
           onNavigate={onNavigate}
@@ -117,6 +368,7 @@ function AdminHome({
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
 
+          {/* SIDEBAR */}
           <div className="lg:col-span-2 order-3 lg:order-1">
 
             <Sidebar
@@ -131,226 +383,24 @@ function AdminHome({
 
           </div>
 
+          {/* MAIN CONTENT */}
           <div className="lg:col-span-10 order-1 lg:order-2 flex flex-col gap-4">
 
-            <div>
-
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
-
-                Admin Dashboard
-
-              </h1>
-
-              <p className="text-gray-500 mt-1">
-
-                Welcome back, Administrator.
-
-              </p>
-              {message && (
-                    <div className="mt-4 bg-green-100 text-green-700 px-4 py-3 rounded-xl">
-                        {message}
-                    </div>
-                )}
-
-            </div>
-
-            {dashboard && (
-
-              <AdminHeroCard
-                dashboard={dashboard}
-                onFinancialReport={() => setFinancialReportOpen(true)}
-            />
-
-            )}
-
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 flex-1">
-
-  {/* Recent Accounts */}
-  <div className="xl:col-span-2 bg-white rounded-3xl shadow-sm p-6">
-
-    <div className="flex justify-between items-center mb-6">
-
-      <div>
-
-        <h2 className="text-2xl font-bold">
-          Recent Treasurer Accounts
-        </h2>
-
-        <p className="text-gray-500">
-          Recently registered accounts
-        </p>
-
-      </div>
-
-      <button
-        onClick={() => onNavigate("treasurers")}
-        className="bg-green-900 text-white rounded-full px-5 py-2 hover:bg-green-800 transition"
-      >
-        Manage Treasurers
-      </button>
-
-    </div>
-
-    <div className="space-y-4">
-
-      {treasurers
-        .slice()
-        .reverse()
-        .slice(0, 5)
-        .map((t) => (
-
-          <div
-            key={t.treasurerID}
-            className="flex justify-between items-center border rounded-2xl p-4 hover:bg-gray-50 transition"
-          >
-
-            <div>
-
-              <h3 className="font-bold text-lg text-green-900">
-                {t.username}
-              </h3>
-
-             <p className="text-gray-500 text-sm">
-                {t.department}
-              </p>
-
-            </div>
-
-           <div className="flex items-center gap-3">
-
-            <span
-              className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                t.role === "Admin"
-                  ? "bg-purple-100 text-purple-700"
-                  : "bg-green-100 text-green-700"
-              }`}
-            >
-              {t.role}
-                </span>
-
-            </div>
-
-          </div>
-
-        ))}
-
-    </div>
-
-  </div>
-
-            {/* Quick Actions */}
-            <div className="bg-white rounded-3xl shadow-sm p-6">
-
-                <h2 className="text-2xl font-bold mb-2">
-                Quick Actions
-                </h2>
-
-                <p className="text-gray-500 mb-6">
-                Administrator shortcuts
-                </p>
-
-                <div className="space-y-4">
-
-                <button
-                    onClick={() => onNavigate("treasurers")}
-                    className="w-full bg-green-900 hover:bg-green-800 text-white rounded-2xl py-4 font-semibold transition"
-                >
-                    Manage Treasurers
-                </button>
-
-                <button
-                    onClick={() => onNavigate("treasurers:add")}
-                    className="w-full border-2 border-green-900 text-green-900 rounded-2xl py-4 font-semibold hover:bg-green-50 transition"
-                >
-                    Add Treasurer
-                </button>
-
-                <button
-                    onClick={loadDashboard}
-                    className="w-full border rounded-2xl py-4 font-semibold hover:bg-gray-100 transition"
-                >
-                    Refresh Dashboard
-                </button>
-
-                </div>
-
-                <div className="mt-6 border-t pt-6">
-
-                <div className="mt-6 border-t pt-6">
-
-                <h3 className="text-xl font-bold mb-4">
-                    System Summary
-                </h3>
-
-                <div className="space-y-4">
-
-                    <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Total Accounts</span>
-                    <span className="font-bold text-lg">
-                        {treasurers.length}
-                    </span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Treasurer Accounts</span>
-                    <span className="font-bold text-lg text-green-700">
-                        {dashboard?.totalStudents}
-                    </span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Administrator Accounts</span>
-                    <span className="font-bold text-lg text-purple-700">
-                        {dashboard?.totalEvents}
-                    </span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Departments Covered</span>
-                    <span className="font-bold text-lg text-blue-700">
-                        {dashboard?.totalPayments}
-                    </span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Total Funds</span>
-                    <span className="font-bold text-lg text-green-900">
-                        ₱ {Number(dashboard?.totalFunds || 0).toLocaleString()}
-                    </span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                    <span className="text-gray-600">System Status</span>
-                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold">
-                        Online
-                    </span>
-                    </div>
-
-                </div>
-
-                </div>
-
-                
-
-                </div>
-
-            </div>
-
-            </div>
+            {renderMainContent()}
 
           </div>
 
         </div>
-        
 
       </div>
-            
-            <FinancialReportModal
-                    open={financialReportOpen}
-                    onClose={() => setFinancialReportOpen(false)}
-                />
-    </div>
 
+      {/* FINANCIAL REPORT MODAL */}
+      <FinancialReportModal
+        open={financialReportOpen}
+        onClose={() => setFinancialReportOpen(false)}
+      />
+
+    </div>
   );
 }
 

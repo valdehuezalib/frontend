@@ -30,13 +30,13 @@ function Navbar({ current, onNavigate, currentPage, toggleSidebar }) {
         <button className="flex items-center gap-3">
 
           <div className="w-10 h-10 rounded-full bg-green-900 text-white flex items-center justify-center font-bold">
-            {current?.short?.charAt(0) || "C"}
+            {current?.short?.charAt(0) || "A"}
           </div>
 
           <div className="text-left">
             <p className="font-semibold">Treasurer</p>
             <p className="text-xs text-gray-500">
-              {current?.short || "CCS"}
+              {current?.short || ""}
             </p>
           </div>
 

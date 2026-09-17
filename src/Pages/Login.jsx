@@ -65,9 +65,13 @@ function Login({ onLogin }) {
     localStorage.setItem("department", data.department);
     localStorage.setItem("role", data.role);
 
-    const dept =
-      data.department ||
-      "College of Computer Studies";
+    const dept = data.department;
+
+    if (!dept) {
+      setModalMessage("Login failed: No department assigned to this account.");
+      setModalType("error");
+      return;
+    }
 
     setModalMessage("Login successful!");
     setModalType("success");
