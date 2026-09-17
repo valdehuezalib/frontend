@@ -50,7 +50,7 @@ const ManageDepartments = () => {
 
     useEffect(() => {
         fetchDepartments();
-    }, []);
+    }, [fetchDepartments]);
 
     /*
      * Add / Update department
