@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FiPlus, FiEdit2, FiTrash2 } from "react-icons/fi";
 
 const API_URL = process.env.REACT_APP_API_BASE_URL;
@@ -16,7 +16,7 @@ const ManageDepartments = () => {
     /*
      * Load departments
      */
-    const fetchDepartments = async () => {
+    const fetchDepartments = useCallback(async () => {
         try {
             setLoading(true);
             setError("");
@@ -43,10 +43,10 @@ const ManageDepartments = () => {
         } catch (err) {
             console.error("Error loading departments:", err);
             setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+           } finally {
+        setLoading(false);
+    }
+}, []);
 
     useEffect(() => {
         fetchDepartments();
